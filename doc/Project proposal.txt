@@ -1,0 +1,27 @@
+Message sent in Discord #project:
+
+AshC — 03/21/2022
+The project I propose is a chat base game that you commonly find on Discord servers; I call them Economy Games, but pretty much they are known as Economy Bots. 
+
+The game is an online chat multiplayer, where the goal is to see who can make the most money, and instead of there being an actual winner, there is a leaderboard that shows all the players ranked from first to last place; First place is the richest person and last is the most broke.
+
+This being an economy game, the focus is to make money, and avoid losing it. You can make money in by doing honest work, or selling items, you can take the risky way of gambling, or take the illicit route by robing people or selling nonlegal services and/or substances. However, if you do illegal activities you run the risk of getting caught, causing you fines, or getting thrown to jail.
+
+That ties up with the ways you lose money, if you don't deposit your account into your bank account, and carry it in your pocket, other players can steal it from you. Or you can gamble in a casino running the risk of losing the money. And, as I already mentioned, you can get fined for doing illegal activity.
+
+One of the main mechanics of the game is an experience system, kinda like the real world. The more you do something, the more experience you get, the better you are at that thing. So you can work and work and work, and the more experience you have the better your chances to find a better paying job. Same goes with illegal activity, the more you do it the more experience you get, the riskier the jobs, and if you get caught doing illegal activities is gonna cost you a looot of money, or you get stuck in jail.
+Time is another mechanic of the game; every action and command has a timer. You work, then you gotta take a break, wait like 20 minutes or something, then you can work again. The better you get payed, the more you have to wait. So this ties with getting thrown into jail, being in jail is like being in time out. Time is money. If you cannot play, you can only see other people get richer.
+
+Another mechanic of the game is you get to spend your money. You can buy discord roles, buying roles is like getting certifications it allows you to get better jobs. Or just plain decorations to show off your riches.
+
+Being an economy game, we can implement blockchain to keep track of important transactions, like payrolls, or if someone reports a robbery. A lot of things can get tracked. And this ties up to the currency, the game has a currency, that's the main objective of the game, but its not necessarily a crypto coin.
+
+There are also like misc events, that are base mostly on randomness, kinda like real life. Say you are on your way to work, but you get distracted and get in a car accident, paying for your medical bills or car repair makes you lose money. 
+The way you play the game is you type commands on the chat, just like every Discord bot. The bot is always listening and looking for the key character. 
+
+So you can type:
+$work
+
+And the bot will look into your life experience level, role, and possible job position, will randomly simulate a job and give a payment.
+
+Once you get your money, the $work command times out for you. You cannot work after a certain amount of time. And then you can do whatever you want with your money. Gamble, buy something from the store, or deposit it.
