@@ -3,7 +3,7 @@
 #include <ws2tcpip.h>
 #include <stdio.h>
 
-//#pragma comment (lib, "Ws2_32.lib")
+#pragma comment (lib, "Ws2_32.lib")
 
 int main( void ) {
     WSADATA wsaData;
@@ -13,7 +13,7 @@ int main( void ) {
     char recvbuf[ 512 ];
     int recvbuflen = 512;
     int result;
-
+    
     result = WSAStartup( MAKEWORD( 2,2 ), &wsaData );
     if ( result != 0 ) {
         printf( "WSAStartup failed with error: %d\n", result );
@@ -25,7 +25,7 @@ int main( void ) {
     hintsAddrInfo.ai_socktype = SOCK_STREAM;
     hintsAddrInfo.ai_protocol = IPPROTO_TCP;
 
-    result = getaddrinfo( "google.com", "80", &hintsAddrInfo, &hostAddrInfo );
+    result = getaddrinfo( "localhost", "12345", &hintsAddrInfo, &hostAddrInfo );
     if ( result != 0 ) {
         printf( "getaddrinfo failed with error: %d\n", result );
         WSACleanup( );
@@ -43,7 +43,6 @@ int main( void ) {
         }
 
         result = connect( hostSock, attemptAddrInfo->ai_addr, (int)attemptAddrInfo->ai_addrlen);
-		printf( "hostAddrInfo: %d\n", result );
         if( result == SOCKET_ERROR ) {
             closesocket( hostSock );
             hostSock = INVALID_SOCKET;
