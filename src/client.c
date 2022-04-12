@@ -9,11 +9,10 @@ int main( void ) {
     WSADATA wsaData;
     SOCKET hostSock = INVALID_SOCKET;
     struct addrinfo *hostAddrInfo = NULL, *attemptAddrInfo = NULL, hintsAddrInfo;
-    char *sendbuf = "GET / HTTP/1.1\n\n";
+    char *sendbuf = "Buffering Begins Here\n\n";
     char recvbuf[ 512 ];
     int recvbuflen = 512;
     int result;
-    
     result = WSAStartup( MAKEWORD( 2,2 ), &wsaData );
     if ( result != 0 ) {
         printf( "WSAStartup failed with error: %d\n", result );
@@ -66,9 +65,8 @@ int main( void ) {
         WSACleanup( );
         return -5;
     }
-
     printf("Bytes Sent: %ld\n", result);
-
+    printf("From Client\n");
     result = shutdown( hostSock, SD_SEND );
     if( result == SOCKET_ERROR ) {
         printf( "shutdown failed with error: %d\n", WSAGetLastError( ) );
@@ -84,14 +82,17 @@ int main( void ) {
         if ( result > 0 ) {
 			total += result;
 			if( preview < 1000 ) { fwrite( recvbuf, 1, result, stdout ); preview += result; }
+            printf( " ___________________\n" );
+            printf( "|Payload:From Server|\n" );
+            printf( " -------------------\n");
         } else if( result == 0 )
-            printf( "Connection closed\n" );
+            printf( "Connection Gets Closed Here\n" );    
         else
             printf( "recv failed with error: %d\n", WSAGetLastError( ) );
 
     } while( result > 0 );
-    printf( "\n\nBytes received: %d\n", total );
-
+    printf( "Bytes Recieved: %ld\n", total );
+        printf( "From Client\n");
     closesocket( hostSock );
     WSACleanup( );
 

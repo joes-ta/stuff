@@ -76,7 +76,7 @@ int main( void ) {
         result = recv( ClientSocket, recvbuf, recvbuflen, 0 );
         if( result > 0 ) {
             printf( "Bytes received: %d\n", result );
-
+            printf("From Client\n");
             iSendResult = send( ClientSocket, recvbuf, result, 0 );
             if( iSendResult == SOCKET_ERROR ) {
                 printf( "send failed with error: %d\n", WSAGetLastError( ) );
@@ -85,9 +85,10 @@ int main( void ) {
                 return -7;
             }
             printf( "Bytes sent: %d\n", iSendResult );
+            printf("From Server\n");
         }
         else if( result == 0 )
-            printf( "Connection closing...\n" );
+            printf( "Connection closing...Closing Client Socket\n" );
         else  {
             printf( "recv failed with error: %d\n", WSAGetLastError( ) );
             closesocket( ClientSocket );
