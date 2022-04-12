@@ -5,14 +5,13 @@
 
 #pragma comment (lib, "Ws2_32.lib")
 
+DWORD WINAPI clientHandler( void *sd );
+
 int main( void ) {
     WSADATA wsaData;
-    SOCKET ListenSocket = INVALID_SOCKET;
-    SOCKET ClientSocket = INVALID_SOCKET;
+    SOCKET listenSocket = INVALID_SOCKET;
+    SOCKET clientSocket = INVALID_SOCKET;
     struct addrinfo *hostAddrInfo = NULL, hintsAddrInfo;
-    int iSendResult;
-    char recvbuf[ 512 ];
-    int recvbuflen = 512;
     int result;
     
     result = WSAStartup( MAKEWORD(2,2), &wsaData );
@@ -34,53 +33,69 @@ int main( void ) {
         return -2;
     }
 
-    ListenSocket = socket( hostAddrInfo->ai_family, hostAddrInfo->ai_socktype, hostAddrInfo->ai_protocol );
-    if( ListenSocket == INVALID_SOCKET ) {
+    listenSocket = socket( hostAddrInfo->ai_family, hostAddrInfo->ai_socktype, hostAddrInfo->ai_protocol );
+    if( listenSocket == INVALID_SOCKET ) {
         printf( "socket failed with error: %ld\n", WSAGetLastError( ) );
         freeaddrinfo( hostAddrInfo );
         WSACleanup( );
         return -3;
     }
 
-    result = bind( ListenSocket, hostAddrInfo->ai_addr, (int)hostAddrInfo->ai_addrlen );
+    result = bind( listenSocket, hostAddrInfo->ai_addr, (int)hostAddrInfo->ai_addrlen );
     if( result == SOCKET_ERROR ) {
         printf( "bind failed with error: %d\n", WSAGetLastError( ) );
         freeaddrinfo( hostAddrInfo );
-        closesocket( ListenSocket );
+        closesocket( listenSocket );
         WSACleanup( );
         return -4;
     }
 
     freeaddrinfo( hostAddrInfo );
 
-    result = listen( ListenSocket, SOMAXCONN );
+    result = listen( listenSocket, SOMAXCONN );
     if( result == SOCKET_ERROR ) {
         printf( "listen failed with error: %d\n", WSAGetLastError( ) );
-        closesocket( ListenSocket );
+        closesocket( listenSocket );
         WSACleanup( );
         return -5;
     }
+	
+    SOCKADDR_IN sinRemote;
+    int nAddrSize = sizeof(sinRemote);
+	DWORD threadID;
 
-    ClientSocket = accept( ListenSocket, NULL, NULL );
-    if( ClientSocket == INVALID_SOCKET ) {
-        printf( "accept failed with error: %d\n", WSAGetLastError( ) );
-        closesocket( ListenSocket );
-        WSACleanup( );
-        return -6;
-    }
+	while( 1 ) {
+		clientSocket = accept( listenSocket, (SOCKADDR *)&sinRemote, &nAddrSize );
+		if( clientSocket == INVALID_SOCKET ) {
+			printf( "accept failed with error: %d\n", WSAGetLastError( ) );
+			closesocket( listenSocket );
+			WSACleanup( );
+			return -6;
+		}
+		CreateThread(0, 0, clientHandler, (void*)clientSocket, 0, &threadID);	
+	}
 
-    closesocket( ListenSocket );
+//    closesocket( listenSocket );
 
-    do {
+    return 0;
+}
 
-        result = recv( ClientSocket, recvbuf, recvbuflen, 0 );
+DWORD WINAPI clientHandler( void *sd ) {
+	SOCKET clientSocket = (SOCKET)sd;
+    int iSendResult;
+    char recvbuf[ 512 ];
+    int recvbuflen = 512;
+	int result = 0;
+
+	do {
+        result = recv( clientSocket, recvbuf, recvbuflen, 0 );
         if( result > 0 ) {
             printf( "Bytes received: %d\n", result );
 
-            iSendResult = send( ClientSocket, recvbuf, result, 0 );
+            iSendResult = send( clientSocket, recvbuf, result, 0 );
             if( iSendResult == SOCKET_ERROR ) {
                 printf( "send failed with error: %d\n", WSAGetLastError( ) );
-                closesocket( ClientSocket );
+                closesocket( clientSocket );
                 WSACleanup( );
                 return -7;
             }
@@ -90,23 +105,23 @@ int main( void ) {
             printf( "Connection closing...\n" );
         else  {
             printf( "recv failed with error: %d\n", WSAGetLastError( ) );
-            closesocket( ClientSocket );
+            closesocket( clientSocket );
             WSACleanup( );
             return -8;
         }
 
     } while( result > 0 );
 
-    result = shutdown( ClientSocket, SD_SEND );
+    result = shutdown( clientSocket, SD_BOTH );
     if( result == SOCKET_ERROR ) {
         printf( "shutdown failed with error: %d\n", WSAGetLastError( ) );
-        closesocket( ClientSocket );
+        closesocket( clientSocket );
         WSACleanup( );
         return -9;
     }
 
-    closesocket( ClientSocket );
-    WSACleanup( );
-
-    return 0;
+    closesocket( clientSocket );
+//    WSACleanup( );
+	
+	return result;
 }
