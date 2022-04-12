@@ -75,7 +75,7 @@ int main( void ) {
 
         result = recv( ClientSocket, recvbuf, recvbuflen, 0 );
         if( result > 0 ) {
-            printf( "Bytes received: %d\n", result );
+printf("Message received:%d", result);
             printf("From Client\n");
             iSendResult = send( ClientSocket, recvbuf, result, 0 );
             if( iSendResult == SOCKET_ERROR ) {
@@ -84,7 +84,7 @@ int main( void ) {
                 WSACleanup( );
                 return -7;
             }
-            printf( "Bytes sent: %d\n", iSendResult );
+            //printf( "Bytes sent: %*c\n", iSendResult );
             printf("From Server\n");
         }
         else if( result == 0 )

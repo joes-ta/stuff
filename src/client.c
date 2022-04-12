@@ -12,6 +12,7 @@ int main( void ) {
     char *sendbuf = "Buffering Begins Here\n\n";
     char recvbuf[ 512 ];
     int recvbuflen = 512;
+    char *input= (char *)malloc(512);
     int result;
     result = WSAStartup( MAKEWORD( 2,2 ), &wsaData );
     if ( result != 0 ) {
@@ -57,16 +58,19 @@ int main( void ) {
         WSACleanup( );
         return -4;
     }
-
-    result = send( hostSock, sendbuf, (int)strlen(sendbuf), 0 );
+    memset(input,0,512);
+    scanf("%511[^\n]",input); 
+    scanf("%*c");
+    result = send( hostSock, input, (int)strlen(input), 0 );
     if( result == SOCKET_ERROR ) {
         printf( "send failed with error: %d\n", WSAGetLastError( ) );
         closesocket( hostSock );
         WSACleanup( );
         return -5;
     }
-    printf("Bytes Sent: %ld\n", result);
-    printf("From Client\n");
+    printf("Message Sent: %p\n", input);   
+    printf("Bytes Sent: %d\n", result);
+    printf("From Client\n\nPayload:\n\n");
     result = shutdown( hostSock, SD_SEND );
     if( result == SOCKET_ERROR ) {
         printf( "shutdown failed with error: %d\n", WSAGetLastError( ) );
@@ -82,9 +86,7 @@ int main( void ) {
         if ( result > 0 ) {
 			total += result;
 			if( preview < 1000 ) { fwrite( recvbuf, 1, result, stdout ); preview += result; }
-            printf( " ___________________\n" );
-            printf( "|Payload:From Server|\n" );
-            printf( " -------------------\n");
+            printf("\n\nThis Was From The Server\n\n");
         } else if( result == 0 )
             printf( "Connection Gets Closed Here\n" );    
         else
@@ -92,7 +94,7 @@ int main( void ) {
 
     } while( result > 0 );
     printf( "Bytes Recieved: %ld\n", total );
-        printf( "From Client\n");
+        printf( "To Client\n");
     closesocket( hostSock );
     WSACleanup( );
 
