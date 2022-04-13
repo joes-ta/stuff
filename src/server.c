@@ -75,7 +75,19 @@ int main( void ) {
 
         result = recv( ClientSocket, recvbuf, recvbuflen, 0 );
         if( result > 0 ) {
-printf("Message received:%s\0",&recvbuf);
+//printf("Message received:%s\0",&recvbuf);
+//char *message=(char *)malloc(sizeof(char)* result);
+char *message;
+message=(char *)malloc(512);
+strcpy(message,recvbuf);
+    sscanf("%s",message);
+            printf("Message received:%s\n",message);
+            //printf("Message size:%d\n",);
+            for (size_t i = 0; i <= result-2; i++)
+            {
+                printf(" %c -",message[i]);
+            }
+            
             printf("\nFrom Client\n");
             iSendResult = send( ClientSocket, recvbuf-1, result, 0 );
             if( iSendResult == SOCKET_ERROR ) {
