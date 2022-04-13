@@ -68,7 +68,7 @@ int main( void ) {
         WSACleanup( );
         return -5;
     }
-    printf("Message Sent: %s\n", input);   
+    printf("Message Sent:%s\n", input);   
     printf("Bytes Sent: %d\n", result);
     printf("From Client\n\nPayload:\n\n");
     result = shutdown( hostSock, SD_SEND );

@@ -77,14 +77,14 @@ int main( void ) {
         if( result > 0 ) {
 printf("Message received:%s\0",&recvbuf);
             printf("\nFrom Client\n");
-            iSendResult = send( ClientSocket, recvbuf, result, 0 );
+            iSendResult = send( ClientSocket, recvbuf-1, result, 0 );
             if( iSendResult == SOCKET_ERROR ) {
                 printf( "send failed with error: %d\n", WSAGetLastError( ) );
                 closesocket( ClientSocket );
                 WSACleanup( );
                 return -7;
             }
-            printf( "Bytes sent: %d\n", iSendResult );
+            printf( "Bytes sent: %d\n", iSendResult);
             printf("From Server\n");
         }
         else if( result == 0 )
