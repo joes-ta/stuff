@@ -61,7 +61,7 @@ int main( void ) {
     memset(input,0,512);
     scanf("%511[^\n]",input); 
     scanf("%*c");
-    result = send( hostSock, input, (int)strlen(input), 0 );
+    result = send( hostSock, input, (int)strlen(input)+1, 0 );
     if( result == SOCKET_ERROR ) {
         printf( "send failed with error: %d\n", WSAGetLastError( ) );
         closesocket( hostSock );
