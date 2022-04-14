@@ -20,12 +20,12 @@ int main( void ) {
         return -1;
     }
 
-    ZeroMemory( &hintsAddrInfo, sizeof(hintsAddrInfo) );
+    ZeroMemory( &hintsAddrInfo, sizeof(hintsAddrInfo) ); //memset( &hintsAddrInfo, 0(intialize to 1),sizeof(hintsAddrInfo) )
         hintsAddrInfo.ai_family = AF_UNSPEC;
         hintsAddrInfo.ai_socktype = SOCK_STREAM;
         hintsAddrInfo.ai_protocol = IPPROTO_TCP;
 
-        result = getaddrinfo( "localhost", "12345", &hintsAddrInfo, &hostAddrInfo );
+        result = getaddrinfo( "localhost", "12345", &hintsAddrInfo, &hostAddrInfo );//Attempt to contact "localhost" at port 12345//List of address structures
     
     if ( result != 0 ) {
         printf( "getaddrinfo failed with error: %d\n", result );
@@ -33,8 +33,8 @@ int main( void ) {
         return -2;
     }
 
-    for( attemptAddrInfo = hostAddrInfo; attemptAddrInfo != NULL ; attemptAddrInfo = attemptAddrInfo->ai_next ) {
-
+    for( attemptAddrInfo = hostAddrInfo; attemptAddrInfo != NULL ; attemptAddrInfo = attemptAddrInfo->ai_next )//ai_next=next address 
+    {
         hostSock = socket( attemptAddrInfo->ai_family, attemptAddrInfo->ai_socktype, 
             attemptAddrInfo->ai_protocol );
         
@@ -44,8 +44,7 @@ int main( void ) {
         return -3;
         }
 
-        result = connect( hostSock, attemptAddrInfo->ai_addr, (int)attemptAddrInfo->ai_addrlen);
-    
+        result = connect( hostSock, attemptAddrInfo->ai_addr, (int)attemptAddrInfo->ai_addrlen); //-> member of
     if( result == SOCKET_ERROR ) {
             closesocket( hostSock );
         hostSock = INVALID_SOCKET;
@@ -61,10 +60,10 @@ int main( void ) {
             WSACleanup( );
         return -4;
     }
-            memset(input,0,512);
-            scanf("%511[^\n]",input); 
-            scanf("%*c");
-        result = send( hostSock, input, (int)strlen(input)+1, 0 );
+            memset(input,0,512); //allocate 512 bit for input and store them as 0's
+            scanf("%511[^\n]",input); //scan through 511 bits for *c / message; looking for anything that is [^\n](Not a newline)  
+            scanf("%*c");//temporary place holder of current character.
+        result = send( hostSock, input, (int)strlen(input)+1, 0 ); //(Socket,message,sizeof(message),flags)
     
     if( result == SOCKET_ERROR ) {
             printf( "send failed with error: %d\n", WSAGetLastError( ) );
@@ -94,7 +93,7 @@ int main( void ) {
     	
         total += result;
 	
-    if( preview < 1000 ) { fwrite(recvbuf, 1, result, stdout); preview += result; }
+    if( preview < 1000 ) {fwrite(recvbuf, 1, result, stdout); preview += result; } //Preview limits to 1000 characters printed.
             
             printf("\n\nThis Was From The Server\n\n");
         } 

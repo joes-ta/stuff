@@ -5,6 +5,14 @@
 
 #pragma comment (lib, "Ws2_32.lib")
 
+struct inventory
+{
+    char *items;
+    long int cash;
+    long int bank;
+};
+
+
 int main( void ) {
     WSADATA wsaData;
     SOCKET ListenSocket = INVALID_SOCKET;
@@ -82,18 +90,33 @@ int main( void ) {
             result = recv( ClientSocket, recvbuf, recvbuflen, 0 );
             
         if( result > 0 ) {
-                //printf("Message received:%s\0",&recvbuf);
         char *message;
+        char *inventory="check inventroy";
+        int ret;
             message=(char *)malloc(512);
                 strcpy(message,recvbuf);
-                sscanf("%s",message);
+                sscanf("%s",message); //Copies data of format string from variable (message)
                 printf("Message received:%s\n",message);
-        
-        for (size_t i = 0; i <= result-2; i++)
+            /*for (size_t i = 0; i <= result-2; i++)
             {
                 printf(" %c -",message[i]);
+            }*/
+            ret=strcmp(message, inventory);
+                //printf("ret value this run:%d\n",ret);
+            long int money=0;char *owe;
+            switch (ret)
+            { 
+                case 1: 
+            break;
+        case 0:
+
+            break;
+        case -1:     
+            break;
             }
-                printf("\nFrom Client\n");
+            printf("You now have:$%ld\n",money);
+            printf("You owe: %s\n",owe);
+            //printf("\nFrom Client\n");
             iSendResult = send( ClientSocket, recvbuf-1, result, 0 );
         
         if( iSendResult == SOCKET_ERROR ) {
@@ -128,6 +151,5 @@ int main( void ) {
 
                 closesocket( ClientSocket );
                 WSACleanup( );
-
             return 0;
 }
