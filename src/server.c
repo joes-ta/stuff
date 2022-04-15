@@ -2,23 +2,60 @@
 
 #include <ws2tcpip.h>
 #include <stdio.h>
+#include<stdlib.h>
+#include<time.h>
+#include<stdbool.h>
 
 struct player
 {
-    char *playerid;
+    char playerid[30];
+    bool inuse;
     char *inventory;
         int health;
         int wallet;
         long int bank;
 };
-
 #pragma comment (lib, "Ws2_32.lib")
+void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwrk,
+                char **inventory,int *health,int *wallet, long int *bank,char *message){
+    if( returninv == 0)
+    {
+    
+    }
+    if( returnhea == 0)
+    {
+    
+    }
+    if( returnwal == 0)
+    {
+        void *temp=&wallet;
+        (*wallet)+=0; bank=temp;
+        printf("%p",&bank);
+    }    
+    if( returnwrk == 0)
+    {
+    int money=rand()%100;
+    srand(time(NULL));
+    *wallet+=money;
+    printf("You got:$%d\n",money);
+        }    
+    /* if( returnwal == 0)
+    {
+        int *temp=&wallet;
+        (*wallet)+=0; *bank=temp;
+        printf("%ld",*bank);
+    } */
+    if( returnbnk == 0)
+    {
+    }
+                  };
 
-void check(int returninv,int returnhea,int returnwal,
-            char *inventory, int health,int wallet){
+void see(int returninv,int returnhea,int returnwal, int returnbnk,
+            char *inventory, int health,int wallet, long int bank){
     printf("bef:%d\n",returninv);
                 printf("%d\n",returnhea);
                 printf("%d\n",returnwal);
+    
     if( returninv == 0)
     {
     printf("Your Inventory:%s\n",inventory);
@@ -31,10 +68,14 @@ void check(int returninv,int returnhea,int returnwal,
     {
     printf("Your Wallet:$%d\n",wallet);
     }
+    if( returnbnk == 0)
+    {
+    printf("Your bank:$%ld\n",bank);
+    }
 };
 
 
-int main( void ) {
+int main() {
     WSADATA wsaData;
     SOCKET ListenSocket = INVALID_SOCKET;
     SOCKET ClientSocket = INVALID_SOCKET;
@@ -46,6 +87,10 @@ int main( void ) {
     int recvbuflen = 512;
     int result;
      int communicate=0;
+        player.inventory="A Joe";
+        player.health=100;
+        player.wallet=1000;
+        player.bank=0;
 do{
             result = WSAStartup( MAKEWORD(2,2), &wsaData );
     
@@ -119,35 +164,28 @@ do{
         int returnwal;
         int returnwrk;
         int returnbnk;
-        char *inv="$inventory";
-        char *hea="$health";
-        char *wal="$wallet";
-        char *wrk="$work";
-        char *bnk="$bank";
         int quitret;
-        player.inventory="A joe";
-        player.health=100;
-        player.wallet=1000;
             message=(char *)malloc(512);
                 strcpy(message,recvbuf);
                 sscanf("%s",message); //Copies data of format string from variable (message)
+            printf("Message received:%s\n",message);
                 switch (recvbuf[0])
                 {
                 case '$':
-                returninv=strcmp(message, inv);
-                returnhea=strcmp(message, hea);
-                returnwal=strcmp(message, wal);
-                returnwrk=strcmp(message, wrk);
-                returnbnk=strcmp(message, bnk);
-                printf("invret:%d\n",returninv);
-                printf("hearet:%d\n",returnhea);
-                printf("walret:%d\n",returnwal);
-                printf("wrkret:%d\n",returnwrk);
-                printf("bnkret:%d\n",returnbnk);
-                check(returninv,returnhea,returnwal,
-                player.inventory,player.health,player.wallet);
+                returninv=strcmp(message, "$inventory");
+                returnhea=strcmp(message, "$health");
+                returnwal=strcmp(message, "$wallet");
+                returnbnk=strcmp(message, "$bank");
+                see(returninv,returnhea,returnwal,returnbnk,
+                player.inventory,player.health,player.wallet,player.bank);
                 break;
                 case '!':
+                  returninv=strcmp(message, "!inventory");
+                returnwrk=strcmp(message, "!work");
+                returnwal=strcmp(message, "!wallet");
+                returnbnk=strcmp(message, "!bank");
+                action(returninv,returnhea,returnwal,returnbnk,returnwrk,
+                &player.inventory,&player.health,&player.wallet,&player.bank,message);
                 break;
                 case 'q':
                 communicate=1;
@@ -157,7 +195,11 @@ do{
                 break;
                 default: printf("Error\n");
                     break;}
-            printf("Message received:%s\n",message);
+                    printf("invret:%d\n",returninv);
+                printf("hearet:%d\n",returnhea);
+                printf("walret:%d\n",returnwal);
+                printf("bnkret:%d\n",returnbnk);
+                printf("wrkret:%d\n",returnwrk);
             //printf("\nFrom Client\n");
             iSendResult = send( ClientSocket, recvbuf, result, 0 );
         
