@@ -1,3 +1,15 @@
 # stuff
-
-Originlly created as a throw away repo for class demo, it's been decided keep it and use it for class project.
+<!DOCTYPE html>
+<html>
+<div> 
+<h2>
+Brandons Playground Of Code
+</h2>
+<p>
+All code is liable to have bugs or not be in fully working condition
+<h3>
+<code>
+  printf("Welcome To My Computer World")
+</code></h3>  
+</p>
+</div>
