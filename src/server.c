@@ -9,52 +9,46 @@
 struct player
 {
     char playerid[30];
-    bool inuse;
-    char *inventory;
-        int health;
+     bool inuse;
+      char *inventory;
+       int health;
         int wallet;
-        long int bank;
+         long int bank;
 };
+
 #pragma comment (lib, "Ws2_32.lib")
+
 void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwrk,
                 char **inventory,int *health,int *wallet, long int *bank,char *message){
     if( returninv == 0)
     {
-    
+        //arguments needed
     }
     if( returnhea == 0)
     {
-    
+        //arguments needed
     }
     if( returnwal == 0)
     {
-        void *temp=&wallet;
-        (*wallet)+=0; bank=temp;
-        printf("%p",&bank);
+        unsigned local=*wallet;
+        *wallet=0; *bank=local;
+        printf("Money Deposited To Bank:%d\n",*bank);
     }    
     if( returnwrk == 0)
     {
-    int money=rand()%100;
-    srand(time(NULL));
-    *wallet+=money;
-    printf("You got:$%d\n",money);
-        }    
-    /* if( returnwal == 0)
-    {
-        int *temp=&wallet;
-        (*wallet)+=0; *bank=temp;
-        printf("%ld",*bank);
-    } */
+        int money=rand()%100;
+        srand(time(NULL));
+        *wallet+=money;
+        printf("You got:$%d\n",money);
+    }    
     if( returnbnk == 0)
     {
-    }
-                  };
+        //arguments needed
+    }              
+    };
 
 void see(int returninv,int returnhea,int returnwal, int returnbnk,
             char *inventory, int health,int wallet, long int bank){
-    printf("bef:%d\n",returninv);
-                printf("%d\n",returnhea);
-                printf("%d\n",returnwal);
     
     if( returninv == 0)
     {
@@ -86,12 +80,12 @@ int main() {
     char recvbuf[ 512 ];
     int recvbuflen = 512;
     int result;
-     int communicate=0;
-        player.inventory="A Joe";
+
+    player.inventory="A Joe";
         player.health=100;
         player.wallet=1000;
         player.bank=0;
-do{
+            
             result = WSAStartup( MAKEWORD(2,2), &wsaData );
     
         if( result != 0 ) {
@@ -153,54 +147,48 @@ do{
     }
 
                 closesocket( ListenSocket );
-        
-       do { 
+     
+        do { 
             result = recv( ClientSocket, recvbuf, recvbuflen, 0 );
             
         if( result > 0 ) {
         char *message;
-        int returninv;
-        int returnhea;
-        int returnwal;
-        int returnwrk;
-        int returnbnk;
+         int returninv;
+          int returnhea;
+           int returnwal;
+          int returnwrk;
+         int returnbnk;
         int quitret;
             message=(char *)malloc(512);
                 strcpy(message,recvbuf);
                 sscanf("%s",message); //Copies data of format string from variable (message)
-            printf("Message received:%s\n",message);
+                printf("Message received:%s\n",message);
                 switch (recvbuf[0])
                 {
-                case '$':
-                returninv=strcmp(message, "$inventory");
-                returnhea=strcmp(message, "$health");
-                returnwal=strcmp(message, "$wallet");
-                returnbnk=strcmp(message, "$bank");
-                see(returninv,returnhea,returnwal,returnbnk,
+                case '?':
+                returninv=strcmp(message, "?inventory");
+                returnhea=strcmp(message, "?health");
+                returnwal=strcmp(message, "?wallet");
+                returnbnk=strcmp(message, "?bank");
+            see(returninv,returnhea,returnwal,returnbnk,
                 player.inventory,player.health,player.wallet,player.bank);
                 break;
-                case '!':
-                  returninv=strcmp(message, "!inventory");
-                returnwrk=strcmp(message, "!work");
-                returnwal=strcmp(message, "!wallet");
-                returnbnk=strcmp(message, "!bank");
-                action(returninv,returnhea,returnwal,returnbnk,returnwrk,
+                case '$':
+                returninv=strcmp(message, "$inventory");
+                returnwrk=strcmp(message, "$work");
+                returnwal=strcmp(message, "$wallet");
+                returnbnk=strcmp(message, "$bank");
+            action(returninv,returnhea,returnwal,returnbnk,returnwrk,
                 &player.inventory,&player.health,&player.wallet,&player.bank,message);
                 break;
                 case 'q':
-                communicate=1;
                 closesocket(ClientSocket);
                 WSACleanup();
-                return 0;
                 break;
                 default: printf("Error\n");
                     break;}
-                    printf("invret:%d\n",returninv);
-                printf("hearet:%d\n",returnhea);
-                printf("walret:%d\n",returnwal);
-                printf("bnkret:%d\n",returnbnk);
-                printf("wrkret:%d\n",returnwrk);
             //printf("\nFrom Client\n");
+            
             iSendResult = send( ClientSocket, recvbuf, result, 0 );
         
         if( iSendResult == SOCKET_ERROR ) {
@@ -236,5 +224,5 @@ do{
                 closesocket( ClientSocket );
                 WSACleanup( );
             return 0;
-}while (communicate=0);
+
 }

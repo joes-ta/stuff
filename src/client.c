@@ -62,21 +62,23 @@ int main( void ) {
             WSACleanup( );
         return -4;
     }
-   do{
+    do{
             memset(input,0,512); //allocate 512 bit for input and store them as 0's
             scanf("%511[^\n]",input); //scan through 511 bits for *c / message; looking for anything that is [^\n](Not a newline)  
             scanf("%*c");//temporary place holder of current character.
         ret=strcmp(quit,input);
-      switch (ret)
-      {
+    switch (ret)
+        {
           case 0:
-          closesocket( hostSock );
+           closesocket( hostSock );
             WSACleanup( );
-            return 0;
+           return 0;
           break;
           case !0:
-      result = send( hostSock, input, (int)strlen(input)+1, 0 ); //(Socket,message,sizeof(message),flags)
-      break;
+          
+          result = send( hostSock, input, (int)strlen(input)+1, 0 ); //(Socket,message,sizeof(message),flags)
+          
+          break;
       }
        
     if( result == SOCKET_ERROR ) {
@@ -89,9 +91,9 @@ int main( void ) {
             printf("Bytes Sent: %d\n", result);
             printf("From Client\n\nPayload:\n");
     int preview = 0;int total=0;
-    char communicate;
-     
+
         result = recv( hostSock, recvbuf, recvbuflen, 0 );
+    
     if ( result > 0 ) {
     	
         total += result;
@@ -109,8 +111,11 @@ int main( void ) {
     
           //  printf( "Bytes Recieved: %ld\n", total);
             //printf( "To Client\n");
+    
     }while(ret!=0);
+    
     result = shutdown( hostSock, SD_SEND );
+    
     if( result == SOCKET_ERROR ) {
             printf( "shutdown failed with error: %d\n", WSAGetLastError( ) );
             closesocket( hostSock );
