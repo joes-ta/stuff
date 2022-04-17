@@ -6,6 +6,10 @@
 #include<time.h>
 #include<stdbool.h>
 
+#pragma comment (lib, "Ws2_32.lib")
+
+DWORD WINAPI clientHandler(void *sd);
+
 struct player
 {
     char playerid[30];
@@ -15,8 +19,6 @@ struct player
         int wallet;
          long int bank;
 };
-
-#pragma comment (lib, "Ws2_32.lib")
 
 void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwrk,
                 char **inventory,int *health,int *wallet, long int *bank,char *message){
@@ -69,22 +71,14 @@ void see(int returninv,int returnhea,int returnwal, int returnbnk,
 };
 
 
-int main() {
+int main(void) {
     WSADATA wsaData;
     SOCKET ListenSocket = INVALID_SOCKET;
     SOCKET ClientSocket = INVALID_SOCKET;
     struct addrinfo *hostAddrInfo = NULL, hintsAddrInfo;
-    //struct player *player,playerid;
-    struct player player;
-    int iSendResult;
-    char recvbuf[ 512 ];
-    int recvbuflen = 512;
     int result;
 
-    player.inventory="A Joe";
-        player.health=100;
-        player.wallet=1000;
-        player.bank=0;
+    
             
             result = WSAStartup( MAKEWORD(2,2), &wsaData );
     
@@ -136,18 +130,35 @@ int main() {
                 WSACleanup( );
             return -5;
     }
+    SOCKADDR_IN sinRemote;
+    int nAddrSize =sizeof(sinRemote);
+    DWORD threadID;
+    while(1){
+            ClientSocket = accept( ListenSocket, (SOCKADDR *)&sinRemote,&nAddrSize);
 
-            ClientSocket = accept( ListenSocket, NULL, NULL );
-        
         if( ClientSocket == INVALID_SOCKET ) {
                 printf( "accept failed with error: %d\n", WSAGetLastError( ) );
                 closesocket( ListenSocket );
                 WSACleanup( );
             return -6;
+        }
+    CreateThread(0,0,clientHandler,(void*)ClientSocket,0,&threadID);
     }
-
                 closesocket( ListenSocket );
-     
+        return 0;
+    }
+    DWORD WINAPI clientHandler(void *sd){
+         SOCKET ClientSocket = (SOCKET)sd;
+    //struct player *player,playerid;
+    struct player player;
+    int iSendResult;
+    char recvbuf[ 512 ];
+    int recvbuflen = 512;
+	int result = 0;
+        player.inventory="A Joe";
+        player.health=100;
+        player.wallet=1000;
+        player.bank=0;
         do { 
             result = recv( ClientSocket, recvbuf, recvbuflen, 0 );
             
@@ -183,7 +194,7 @@ int main() {
                 break;
                 case 'q':
                 closesocket(ClientSocket);
-                WSACleanup();
+                
                 break;
                 default: printf("Error\n");
                     break;}
@@ -222,7 +233,7 @@ int main() {
     }
 
                 closesocket( ClientSocket );
-                WSACleanup( );
-            return 0;
+              //  WSACleanup( );
+            return result;
 
 }

@@ -15,6 +15,7 @@ int main( void ) {
     int result;
     char *quit="quit";
     int ret;    
+        
         result = WSAStartup( MAKEWORD( 2,2 ), &wsaData );
     
     if ( result != 0 ) {
@@ -88,8 +89,10 @@ int main( void ) {
         return -5;
     }
             printf("Message Sent:%s\n", input);   
-            printf("Bytes Sent: %d\n", result);
-            printf("From Client\n\nPayload:\n");
+           // printf("Bytes Sent: %d\n", result);//printf("From Client\n");
+            printf("\nMessage Recieved:\n");
+
+    
     int preview = 0;int total=0;
 
         result = recv( hostSock, recvbuf, recvbuflen, 0 );
@@ -114,14 +117,14 @@ int main( void ) {
     
     }while(ret!=0);
     
-    result = shutdown( hostSock, SD_SEND );
+    /*result = shutdown( hostSock, SD_SEND );
     
     if( result == SOCKET_ERROR ) {
             printf( "shutdown failed with error: %d\n", WSAGetLastError( ) );
             closesocket( hostSock );
             WSACleanup( );
             return -6;}
-        else    
+        else    */
             closesocket( hostSock );
             WSACleanup( );
         return 0;
