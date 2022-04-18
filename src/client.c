@@ -1,4 +1,4 @@
-// https://docs.microsoft.com/en-us/windows/win32/winsock/winsock-client-application
+// https://docs.microsoft.com/en-us/windows/win32/winsock/winsock-client-applicatio
 
 #include <ws2tcpip.h>
 #include <stdio.h>
