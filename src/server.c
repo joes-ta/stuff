@@ -9,11 +9,10 @@
 #pragma comment (lib, "Ws2_32.lib")
 
 DWORD WINAPI clientHandler(void *sd);
-
+struct player *player[30];
 struct player
 {
-    char playerid[30];
-     bool inuse;
+    unsigned char playerid[30];
       char *inventory;
        int health;
         int wallet;
@@ -49,9 +48,13 @@ void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwr
     }              
     };
 
-void see(int returninv,int returnhea,int returnwal, int returnbnk,
-            char *inventory, int health,int wallet, long int bank){
-    
+void see(int returninv,int returnhea,int returnwal, int returnbnk,int returnid,
+            char *inventory, int health,int wallet, long int bank,unsigned char *playerid){
+    if( returnid == 0)
+    {
+        
+        printf("You're Id Is: %d\n", *playerid);
+    }
     if( returninv == 0)
     {
     printf("Your Inventory:%s\n",inventory);
@@ -62,11 +65,11 @@ void see(int returninv,int returnhea,int returnwal, int returnbnk,
     }
     if( returnwal == 0)
     {
-    printf("Your Wallet:$%d\n",wallet);
+    printf("Your Wallet: $%d\n",wallet);
     }
     if( returnbnk == 0)
     {
-    printf("Your bank:$%ld\n",bank);
+    printf("Your bank: $%ld\n",bank);
     }
 };
 
@@ -77,9 +80,10 @@ int main(void) {
     SOCKET ClientSocket = INVALID_SOCKET;
     struct addrinfo *hostAddrInfo = NULL, hintsAddrInfo;
     int result;
+    //struct player players;
+    struct player *player;
+          player=(struct player *)malloc(sizeof(player));
 
-    
-            
             result = WSAStartup( MAKEWORD(2,2), &wsaData );
     
         if( result != 0 ) {
@@ -100,8 +104,12 @@ int main(void) {
                     WSACleanup( );
                 return -2;
     }
-
-
+    for (int i = 0; i < 30; )  
+    {  
+        player->playerid[i] = 0;
+    printf("Id [%d]: %d",i,player->playerid[i]);
+    i++;
+    } 
         ListenSocket = socket( hostAddrInfo->ai_family, hostAddrInfo->ai_socktype, hostAddrInfo->ai_protocol );
         
             if( ListenSocket == INVALID_SOCKET ) {
@@ -133,7 +141,8 @@ int main(void) {
     SOCKADDR_IN sinRemote;
     int nAddrSize =sizeof(sinRemote);
     DWORD threadID;
-    while(1){
+    
+        while(1){
             ClientSocket = accept( ListenSocket, (SOCKADDR *)&sinRemote,&nAddrSize);
 
         if( ClientSocket == INVALID_SOCKET ) {
@@ -141,24 +150,40 @@ int main(void) {
                 closesocket( ListenSocket );
                 WSACleanup( );
             return -6;
-        }
+            }
     CreateThread(0,0,clientHandler,(void*)ClientSocket,0,&threadID);
-    }
+        }
                 closesocket( ListenSocket );
-        return 0;
-    }
+       //free(player);
+       return;
+}
     DWORD WINAPI clientHandler(void *sd){
          SOCKET ClientSocket = (SOCKET)sd;
-    //struct player *player,playerid;
-    struct player player;
+          struct player *player;
+          player=(struct player *)malloc(sizeof(player));
+    //struct player players; 
     int iSendResult;
     char recvbuf[ 512 ];
     int recvbuflen = 512;
 	int result = 0;
-        player.inventory="A Joe";
-        player.health=100;
-        player.wallet=1000;
-        player.bank=0;
+    int max_clients=30;
+    int id;
+    int i;
+    for ( i = 0; i < max_clients;)
+    {
+        if (player->playerid[i]==0)
+        {
+            player->playerid[i]=ClientSocket;
+            id=i;
+            break;
+        }
+        i++;
+    }
+    
+        player->inventory="A Joe";
+        player->health=100;
+        player->wallet=1000;
+        player->bank=0;
         do { 
             result = recv( ClientSocket, recvbuf, recvbuflen, 0 );
             
@@ -166,6 +191,7 @@ int main(void) {
         char *message;
          int returninv;
           int returnhea;
+           int returnid;
            int returnwal;
           int returnwrk;
          int returnbnk;
@@ -181,8 +207,9 @@ int main(void) {
                 returnhea=strcmp(message, "?health");
                 returnwal=strcmp(message, "?wallet");
                 returnbnk=strcmp(message, "?bank");
-            see(returninv,returnhea,returnwal,returnbnk,
-                player.inventory,player.health,player.wallet,player.bank);
+                returnid=strcmp(message,  "?me");
+            see(returninv,returnhea,returnwal,returnbnk,returnid,
+                player->inventory,player->health,player->wallet,player->bank,player->playerid);
                 break;
                 case '$':
                 returninv=strcmp(message, "$inventory");
@@ -190,7 +217,7 @@ int main(void) {
                 returnwal=strcmp(message, "$wallet");
                 returnbnk=strcmp(message, "$bank");
             action(returninv,returnhea,returnwal,returnbnk,returnwrk,
-                &player.inventory,&player.health,&player.wallet,&player.bank,message);
+                &player->inventory,&player->health,&player->wallet,&player->bank,message);
                 break;
                 case 'q':
                 closesocket(ClientSocket);
@@ -199,6 +226,11 @@ int main(void) {
                 default: printf("Error\n");
                     break;}
             //printf("\nFrom Client\n");
+            for ( i = 0; i < 30; i++)
+            {
+                
+                printf("Id [%d]: %d",i,player->playerid[i]);
+            }
             
             iSendResult = send( ClientSocket, recvbuf, result, 0 );
         
@@ -208,8 +240,8 @@ int main(void) {
                 WSACleanup( );
             return -7;
             }
-                printf( "Bytes sent: %d\n", iSendResult);
-                printf("From Server\n");
+                //printf( "Bytes sent: %d\n", iSendResult);
+                //printf("From Server\n");
         }
         
         else if( result == 0 )
@@ -231,8 +263,9 @@ int main(void) {
                 WSACleanup( );
             return -9;
     }
-
                 closesocket( ClientSocket );
+player->playerid[id]=0;
+//free(player);
               //  WSACleanup( );
             return result;
 

@@ -1,4 +1,4 @@
-// https://docs.microsoft.com/en-us/windows/win32/winsock/winsock-client-application
+               // https://docs.microsoft.com/en-us/windows/win32/winsock/winsock-client-application
 
 #include <ws2tcpip.h>
 #include <stdio.h>
@@ -88,10 +88,10 @@ int main( void ) {
             WSACleanup( );
         return -5;
     }
-            printf("Message Sent:%s\n", input);   
+            //printf("Message Sent:%s\n", input);   
            // printf("Bytes Sent: %d\n", result);//printf("From Client\n");
-            printf("\nMessage Recieved:\n");
-
+            //printf("\nMessage Recieved:\n");
+        
     
     int preview = 0;int total=0;
 
@@ -101,9 +101,12 @@ int main( void ) {
     	
         total += result;
 	
-    if( preview < 1000 && ret!=0) {fwrite(recvbuf, 1, result, stdout); preview += result; } //Preview limits to 1000 characters printed.
-            
-            printf("\n\nThis Was From The Server\n\n");
+    if( preview < 1000 && ret!=0) {
+        printf("Message Check: ");
+        fwrite(recvbuf, 1, result, stdout);
+        printf("\n");
+         preview += result; } //Preview limits to 1000 characters printed.
+            //printf("\n\nThis Was From The Server\n\n");
         } 
     else if( result == 0 )
             printf( "Connection Gets Closed Here\n" );    
@@ -117,15 +120,15 @@ int main( void ) {
     
     }while(ret!=0);
     
-    /*result = shutdown( hostSock, SD_SEND );
+    result = shutdown( hostSock, SD_SEND );
     
     if( result == SOCKET_ERROR ) {
             printf( "shutdown failed with error: %d\n", WSAGetLastError( ) );
             closesocket( hostSock );
             WSACleanup( );
             return -6;}
-        else    */
+        
             closesocket( hostSock );
-            WSACleanup( );
+            //WSACleanup( );
         return 0;
 }
