@@ -8,8 +8,8 @@
 
 #pragma comment (lib, "Ws2_32.lib")
 
-DWORD WINAPI clientHandler(void *sd);
-struct player *player[30];
+DWORD WINAPI clientHandler(void* player);
+
 struct player
 {
     unsigned char playerid[30];
@@ -17,6 +17,7 @@ struct player
        int health;
         int wallet;
          long int bank;
+         SOCKET ClientSocket;
 };
 
 void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwrk,
@@ -49,11 +50,11 @@ void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwr
     };
 
 void see(int returninv,int returnhea,int returnwal, int returnbnk,int returnid,
-            char *inventory, int health,int wallet, long int bank,unsigned char *playerid){
+            char *inventory, int health,int wallet, long int bank,unsigned char playerid){
     if( returnid == 0)
     {
         
-        printf("You're Id Is: %d\n", *playerid);
+        printf("You're Id Is: %d\n", playerid);
     }
     if( returninv == 0)
     {
@@ -76,14 +77,14 @@ void see(int returninv,int returnhea,int returnwal, int returnbnk,int returnid,
 
 int main(void) {
     WSADATA wsaData;
+    struct addrinfo *hostAddrInfo = NULL, hintsAddrInfo;
     SOCKET ListenSocket = INVALID_SOCKET;
     SOCKET ClientSocket = INVALID_SOCKET;
-    struct addrinfo *hostAddrInfo = NULL, hintsAddrInfo;
+    //player->ClientSocket=INVALID_SOCKET;
     int result;
     //struct player players;
     struct player *player;
-          player=(struct player *)malloc(sizeof(player));
-
+          player=(struct player *)malloc(sizeof(*player));
             result = WSAStartup( MAKEWORD(2,2), &wsaData );
     
         if( result != 0 ) {
@@ -109,8 +110,7 @@ int main(void) {
         player->playerid[i] = 0;
     printf("Id [%d]: %d",i,player->playerid[i]);
     i++;
-    } 
-        ListenSocket = socket( hostAddrInfo->ai_family, hostAddrInfo->ai_socktype, hostAddrInfo->ai_protocol );
+    } ListenSocket = socket( hostAddrInfo->ai_family, hostAddrInfo->ai_socktype, hostAddrInfo->ai_protocol );
         
             if( ListenSocket == INVALID_SOCKET ) {
                     printf( "socket failed with error: %ld\n", WSAGetLastError( ) );
@@ -144,23 +144,23 @@ int main(void) {
     
         while(1){
             ClientSocket = accept( ListenSocket, (SOCKADDR *)&sinRemote,&nAddrSize);
-
+        player->ClientSocket=ClientSocket;
         if( ClientSocket == INVALID_SOCKET ) {
                 printf( "accept failed with error: %d\n", WSAGetLastError( ) );
                 closesocket( ListenSocket );
                 WSACleanup( );
             return -6;
             }
-    CreateThread(0,0,clientHandler,(void*)ClientSocket,0,&threadID);
+    CreateThread(0,0,clientHandler, (void *)player,0,&threadID);
         }
-                closesocket( ListenSocket );
+               closesocket( ListenSocket );
        //free(player);
        return;
 }
-    DWORD WINAPI clientHandler(void *sd){
-         SOCKET ClientSocket = (SOCKET)sd;
-          struct player *player;
-          player=(struct player *)malloc(sizeof(player));
+    DWORD WINAPI clientHandler(struct player *player){
+         SOCKET ClientSocket = (SOCKET)player;
+          //struct player *player;
+          //player=(struct player *)malloc(sizeof(player));
     //struct player players; 
     int iSendResult;
     char recvbuf[ 512 ];
@@ -173,7 +173,7 @@ int main(void) {
     {
         if (player->playerid[i]==0)
         {
-            player->playerid[i]=ClientSocket;
+            player->playerid[i]=player->ClientSocket;
             id=i;
             break;
         }
@@ -185,7 +185,7 @@ int main(void) {
         player->wallet=1000;
         player->bank=0;
         do { 
-            result = recv( ClientSocket, recvbuf, recvbuflen, 0 );
+            result = recv( player->ClientSocket, recvbuf, recvbuflen, 0 );
             
         if( result > 0 ) {
         char *message;
@@ -209,7 +209,7 @@ int main(void) {
                 returnbnk=strcmp(message, "?bank");
                 returnid=strcmp(message,  "?me");
             see(returninv,returnhea,returnwal,returnbnk,returnid,
-                player->inventory,player->health,player->wallet,player->bank,player->playerid);
+                player->inventory,player->health,player->wallet,player->bank,player->playerid[id]);
                 break;
                 case '$':
                 returninv=strcmp(message, "$inventory");
@@ -220,27 +220,27 @@ int main(void) {
                 &player->inventory,&player->health,&player->wallet,&player->bank,message);
                 break;
                 case 'q':
-                closesocket(ClientSocket);
+                closesocket(player->ClientSocket);
                 
                 break;
                 default: printf("Error\n");
                     break;}
             //printf("\nFrom Client\n");
-            for ( i = 0; i < 30; i++)
+            /*for ( i = 0; i < 30; i++)
             {
                 
                 printf("Id [%d]: %d",i,player->playerid[i]);
-            }
+            }*/
             
-            iSendResult = send( ClientSocket, recvbuf, result, 0 );
+            iSendResult = send(player->ClientSocket, recvbuf, result, 0 );
         
         if( iSendResult == SOCKET_ERROR ) {
                 printf( "send failed with error: %d\n", WSAGetLastError( ) );
-                closesocket( ClientSocket );
+                closesocket( player->ClientSocket );
                 WSACleanup( );
             return -7;
             }
-                //printf( "Bytes sent: %d\n", iSendResult);
+                printf( "Bytes sent: %d\n", iSendResult);
                 //printf("From Server\n");
         }
         
@@ -249,24 +249,23 @@ int main(void) {
         
         else  {
                 printf( "recv failed with error: %d\n", WSAGetLastError( ) );
-                closesocket( ClientSocket );
+                closesocket( player->ClientSocket );
                 WSACleanup( );
             return -8;
         }
 
     }   while( result > 0 );
-            
-            result = shutdown( ClientSocket, SD_SEND );
+           result = shutdown( ClientSocket, SD_SEND );
         if( result == SOCKET_ERROR ) {
                 printf( "shutdown failed with error: %d\n", WSAGetLastError( ) );
-                closesocket( ClientSocket );
+                closesocket( player->ClientSocket );
                 WSACleanup( );
             return -9;
     }
-                closesocket( ClientSocket );
+                closesocket( player->ClientSocket );
 player->playerid[id]=0;
 //free(player);
               //  WSACleanup( );
             return result;
-
+    
 }

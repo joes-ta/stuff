@@ -107,6 +107,7 @@ int main( void ) {
         printf("\n");
          preview += result; } //Preview limits to 1000 characters printed.
             //printf("\n\nThis Was From The Server\n\n");
+        
         } 
     else if( result == 0 )
             printf( "Connection Gets Closed Here\n" );    
@@ -120,15 +121,15 @@ int main( void ) {
     
     }while(ret!=0);
     
-    result = shutdown( hostSock, SD_SEND );
+   /* result = shutdown( hostSock, SD_SEND );
     
     if( result == SOCKET_ERROR ) {
             printf( "shutdown failed with error: %d\n", WSAGetLastError( ) );
             closesocket( hostSock );
             WSACleanup( );
             return -6;}
-        
+     */   
             closesocket( hostSock );
             //WSACleanup( );
-        return 0;
+        return;
 }
