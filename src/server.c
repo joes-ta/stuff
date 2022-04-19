@@ -7,6 +7,11 @@
 
 DWORD WINAPI clientHandler( void *sd );
 
+void workMining () {
+    printf ("Experience Gained: %d xp\n", 25);
+    printf ("Money Earned: %d\n", 5);
+}
+
 int main( void ) {
     WSADATA wsaData;
     SOCKET listenSocket = INVALID_SOCKET;
@@ -86,12 +91,16 @@ DWORD WINAPI clientHandler( void *sd ) {
     char recvbuf[ 512 ];
     int recvbuflen = 512;
 	int result = 0;
+    char* clientInput;
+    int returnWork;
+    clientInput=(char *)malloc(512);
 
 	do {
         result = recv( clientSocket, recvbuf, recvbuflen, 0 );
         if( result > 0 ) {
             printf( "Bytes received: %d\n", result );
-
+            strcpy(clientInput,recvbuf);
+            printf ("%s", clientInput);
             iSendResult = send( clientSocket, recvbuf, result, 0 );
             if( iSendResult == SOCKET_ERROR ) {
                 printf( "send failed with error: %d\n", WSAGetLastError( ) );
