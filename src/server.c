@@ -7,9 +7,18 @@
 
 DWORD WINAPI clientHandler( void *sd );
 
-void workMining () {
+void workMining ( int timesMined ) {
+    int miningExperience=timesMined * .25;
+    int money;
+    if ( miningExperience < 5) {
+        money=rand() % 51 + 1;
+    }
+    else if ( miningExperience >= 5 ) {
+        money=rand() % 201 + 51;
+    }
     printf ("Experience Gained: %d xp\n", 25);
-    printf ("Money Earned: %d\n", 5);
+    printf ("Money Earned: %d dollars\n", money);
+    printf ("Mining Level: %d\n", miningExperience);
 }
 
 int main( void ) {
@@ -93,14 +102,28 @@ DWORD WINAPI clientHandler( void *sd ) {
 	int result = 0;
     char* clientInput;
     int returnWork;
+    int workNotSpecified;
+    int timesMined=0;
+    char* outputTest;
     clientInput=(char *)malloc(512);
+    outputTest=(char *)malloc (24);
 
 	do {
         result = recv( clientSocket, recvbuf, recvbuflen, 0 );
         if( result > 0 ) {
+            // new code
             printf( "Bytes received: %d\n", result );
-            strcpy(clientInput,recvbuf);
-            printf ("%s", clientInput);
+            outputTest=recvbuf;
+            workNotSpecified=strcmp(outputTest, "$work");
+            if (workNotSpecified == 0) {
+                printf ("Pick from one of the following:\n $work.Mining\n $work.Teaching\n $work.Smithing\n");
+            }
+            returnWork=strcmp(outputTest, "$work.Mining");
+            if (returnWork == 0) {
+                timesMined=timesMined + 1;
+                workMining( timesMined );
+            }
+            // end of new code
             iSendResult = send( clientSocket, recvbuf, result, 0 );
             if( iSendResult == SOCKET_ERROR ) {
                 printf( "send failed with error: %d\n", WSAGetLastError( ) );

@@ -15,7 +15,7 @@ int main( void ) {
     int result;
     char *quit="quit";
     int ret;    
-        result = WSAStartup( MAKEWORD( 2,2 ), &wsaData );
+    result = WSAStartup( MAKEWORD( 2,2 ), &wsaData );
     if ( result != 0 ) {
         printf( "WSAStartup failed with error: %d\n", result );
         return -1;
