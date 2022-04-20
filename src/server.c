@@ -21,6 +21,20 @@ void workMining ( int timesMined ) {
     printf ("Mining Level: %d\n", miningExperience);
 }
 
+void workSmithing ( int timesSmithed ) {
+    int smithingExperience=timesSmithed * .25;
+    int money;
+    if ( smithingExperience < 5) {
+        money=rand() % 251 + 51;
+    }
+    else if ( smithingExperience >= 5 ) {
+        money=rand() % 501 + 201;
+    }
+    printf ("Experience Gained: %d xp\n", 25);
+    printf ("Money Earned: %d dollars\n", money);
+    printf ("Mining Level: %d\n", smithingExperience);
+}
+
 int main( void ) {
     WSADATA wsaData;
     SOCKET listenSocket = INVALID_SOCKET;
@@ -104,6 +118,7 @@ DWORD WINAPI clientHandler( void *sd ) {
     int returnWork;
     int workNotSpecified;
     int timesMined=0;
+    int timesSmithed=0;
     char* outputTest;
     clientInput=(char *)malloc(512);
     outputTest=(char *)malloc (24);
@@ -122,6 +137,11 @@ DWORD WINAPI clientHandler( void *sd ) {
             if (returnWork == 0) {
                 timesMined=timesMined + 1;
                 workMining( timesMined );
+            }
+            returnWork=strcmp(outputTest, "$work.Smithing");
+            if (returnWork == 0) {
+                timesSmithed=timesSmithed + 1;
+                workSmithing( timesSmithed );
             }
             // end of new code
             iSendResult = send( clientSocket, recvbuf, result, 0 );
