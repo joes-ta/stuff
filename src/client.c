@@ -1,4 +1,4 @@
-               // https://docs.microsoft.com/en-us/windows/win32/winsock/winsock-client-application
+// https://docs.microsoft.com/en-us/windows/win32/winsock/winsock-client-application
 
 #include <ws2tcpip.h>
 #include <stdio.h>
@@ -48,6 +48,7 @@ int main( void ) {
         }
 
         result = connect( hostSock, attemptAddrInfo->ai_addr, (int)attemptAddrInfo->ai_addrlen); //-> member of
+    
     if( result == SOCKET_ERROR ) {
             closesocket( hostSock );
         hostSock = INVALID_SOCKET;
@@ -92,7 +93,6 @@ int main( void ) {
            // printf("Bytes Sent: %d\n", result);//printf("From Client\n");
             //printf("\nMessage Recieved:\n");
         
-    
     int preview = 0;int total=0;
 
         result = recv( hostSock, recvbuf, recvbuflen, 0 );
