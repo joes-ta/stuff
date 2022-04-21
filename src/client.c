@@ -29,7 +29,7 @@ int main( void ) {
         hintsAddrInfo.ai_protocol = IPPROTO_TCP;
 
         result = getaddrinfo( "localhost", "12345", &hintsAddrInfo, &hostAddrInfo );//Attempt to contact "localhost" at port 12345//List of address structures
-    
+            
     if ( result != 0 ) {
         printf( "getaddrinfo failed with error: %d\n", result );
         WSACleanup( );
@@ -116,7 +116,7 @@ int main( void ) {
             printf( "recv failed with error: %d\n", WSAGetLastError( ) );
 
     
-          //  printf( "Bytes Recieved: %ld\n", total);
+           printf( "Bytes Recieved: %ld\n", total);
             //printf( "To Client\n");
     
     }while(ret!=0);

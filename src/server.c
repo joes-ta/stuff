@@ -17,9 +17,11 @@ struct player
       int health;
        int wallet;
         long int bank;
-         SOCKET ClientSocket;
+         SOCKET ClientSocket[30];
+         int sockid;
 };
-
+//Game Mechanics Happen Here
+//Alternated Buffer. *Note:Will send back empty recvbuf for undeveloped mechanics
 void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwrk,
                 char **inventory,int *health,int *wallet, long int *bank,char *message){
     if( returninv == 0)
@@ -50,31 +52,67 @@ void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwr
     };
 
 void see(int returninv,int returnhea,int returnwal, int returnbnk,int returnid,
-            char *inventory, int health,int wallet, long int bank,unsigned char playerid){
+        char *recvbuf,int *recvbuflen, char *inventory, int health,int wallet, long int bank,unsigned char playerid){
+   char str[512];
+     memset(str,0,512);
+     memset(recvbuf,0,512);
     if( returnid == 0)
     {
-        
-        printf("You're Id Is: %d\n", playerid);
+        printf("ID:%d\n", playerid);
+        char *strltrl="ID:";
+    sprintf(str,"%s%d",strltrl,playerid);
+    strncpy(recvbuf,str,sizeof(str));
+        *recvbuflen=sizeof(&str)+2;
+        //*recvbuflen=sizeof(&strltrl)+sizeof(&playerid); 
+          printf("recvbuf:%s\n",recvbuf);
+            printf("Sizeof:%d\n",*recvbuflen);
+       
     }
     if( returninv == 0)
     {
     printf("Your Inventory:%s\n",inventory);
+       
+            *recvbuflen=sizeof(&inventory)+1;
+            strncpy(recvbuf,inventory,sizeof(inventory)+1);
+            printf("recvbuf:%s\n",recvbuf);
+            printf("Sizeof:%d\n",*recvbuflen);
     }
     if( returnhea == 0)
     {
-    printf("Your Health:%d\n",health);
-    }
+    char *strltrl=" health";
+    sprintf(str,"%d%s",health,strltrl);
+    strncpy(recvbuf,str,sizeof(str));
+            *recvbuflen=sizeof(health)+sizeof(strltrl)+2;
+    printf("Your Health:%s\n",str);
+  printf("recvbuf:%s\n",recvbuf);
+            printf("Sizeof:%d\n",*recvbuflen);
+    
+  }
     if( returnwal == 0)
     {
     printf("Your Wallet: $%d\n",wallet);
+    /*char *strltrl="Wallet:$";
+    sprintf(str,"%s%d",strltrl,wallet);
+    strncpy(recvbuf,str,sizeof(str));
+            *recvbuflen=sizeof();
+  printf("recvbuf:%s\n",recvbuf);
+            printf("Sizeof:%d\n",*recvbuflen);*/
     }
     if( returnbnk == 0)
     {
     printf("Your bank: $%ld\n",bank);
+    /*char *strltrl="Bank:$";
+    sprintf(str,"%s%d",strltrl,bank);
+    strncpy(recvbuf,str,sizeof(str));
+            *recvbuflen=sizeof(bank)+sizeof(*strltrl);
+  printf("recvbuf:%s\n",recvbuf);
+            printf("Sizeof:%d\n",*recvbuflen);*/
     }
-};
+};//End Of Game Mechanics
 
-
+//Listening and Accepting Of Clients Happens Here
+//Assigning of Client Sockets Happens Here
+//Preparations For Client ID happens here;
 int main(void) {
     WSADATA wsaData;
     struct addrinfo *hostAddrInfo = NULL, hintsAddrInfo;
@@ -142,12 +180,18 @@ int main(void) {
     SOCKADDR_IN sinRemote;
     int nAddrSize =sizeof(sinRemote);
     DWORD threadID;
-    
+    memset(player->ClientSocket,0,30);
         while(1){
             ClientSocket = accept( ListenSocket, (SOCKADDR *)&sinRemote,&nAddrSize);
         
-        player->ClientSocket=ClientSocket;
-        
+        for(int i=0;i<30;){
+        printf("I: %d Socket#: %d\n",i,player->ClientSocket[i]);
+        if(player->ClientSocket[i]==0){
+        player->ClientSocket[i]=ClientSocket;
+        printf("CSock: %d | player->csock: %d | I : %d\n",ClientSocket,player->ClientSocket[i],i);
+        break;}
+        i++;
+        }
         if( ClientSocket == INVALID_SOCKET ) {
                 printf( "accept failed with error: %d\n", WSAGetLastError( ) );
                 closesocket( ListenSocket );
@@ -157,14 +201,17 @@ int main(void) {
     CreateThread(0,0,clientHandler, (void *)player,0,&threadID);
         }
                closesocket( ListenSocket );
-//free(player);
        return;
 }
+    
+    //Sending And Reciving Happens Here
+    //Assignment of Player Ids Happens Here
+    //Manipulation Of Client Message Happens Here
     DWORD WINAPI clientHandler(struct player *player){
     SOCKET ClientSocket = (SOCKET)player;
     int iSendResult;
-     char recvbuf[ 512 ];
-      int recvbuflen = 512;
+     //char recvbuf[512];
+      //int recvbuflen = 512;
 	   int result = 0;
       int max_clients=30;
      int id;
@@ -174,20 +221,21 @@ int main(void) {
     {
         if (player->playerid[i]==0)
         {
-            player->playerid[i]=player->ClientSocket; //Register Id in PlayerId array
+            player->playerid[i]=player->ClientSocket[i]; //Register Id in PlayerId array
             id=i; //Store Id Array Location
             break;
         }
         i++;
     }
-    
+
         player->inventory="A Joe";
         player->health=100;
         player->wallet=1000;
         player->bank=0;
-        
         do { 
-            result = recv( player->ClientSocket, recvbuf, recvbuflen, 0 );
+            char recvbuf[512];
+      int recvbuflen = 512;
+            result = recv( player->ClientSocket[id],recvbuf, recvbuflen, 0 );
             
         if( result > 0 ) {
         char *message;
@@ -198,6 +246,7 @@ int main(void) {
           int returnwrk;
          int returnbnk;
         int quitret;
+         int recvbuflen=(int)strlen(recvbuf);    
             message=(char *)malloc(512);
                 strcpy(message,recvbuf);
                 sscanf("%s",message); //Copies data of format string from variable (message)
@@ -210,7 +259,7 @@ int main(void) {
                 returnwal=strcmp(message, "?wallet");
                 returnbnk=strcmp(message, "?bank");
                 returnid=strcmp(message,  "?me");
-            see(returninv,returnhea,returnwal,returnbnk,returnid,
+            see(returninv,returnhea,returnwal,returnbnk,returnid,recvbuf,&recvbuflen,
                 player->inventory,player->health,player->wallet,player->bank,player->playerid[id]);
                 break;
                 case '$':
@@ -222,7 +271,7 @@ int main(void) {
                 &player->inventory,&player->health,&player->wallet,&player->bank,message);
                 break;
                 case 'q':
-                closesocket(player->ClientSocket);
+                closesocket(player->ClientSocket[id]);
                 
                 break;
                 default: printf("Error\n");
@@ -235,16 +284,19 @@ int main(void) {
             if (player->playerid[i+1]==0)
                 break;   
             }
-            
-            iSendResult = send(player->ClientSocket, recvbuf, result, 0 );
+           printf("recvbuf:%s\n",recvbuf);
+            printf("Sizeof:%d\n",recvbuflen);
+    
+   
+            iSendResult = send(player->ClientSocket[id], recvbuf, recvbuflen, 0 );
         
         if( iSendResult == SOCKET_ERROR ) {
                 printf( "send failed with error: %d\n", WSAGetLastError( ) );
-                closesocket( player->ClientSocket );
+                closesocket( player->ClientSocket[id] );
                 WSACleanup( );
             return -7;
             }
-                //printf( "Bytes sent: %d\n", iSendResult);
+                printf( "Bytes sent: %d\n", iSendResult);
                 //printf("From Server\n");
         }
         
@@ -253,7 +305,7 @@ int main(void) {
         
         else  {
                 printf( "recv failed with error: %d\n", WSAGetLastError( ) );
-                closesocket( player->ClientSocket );
+                closesocket( player->ClientSocket[id] );
                 WSACleanup( );
             return -8;
         }
@@ -266,8 +318,9 @@ int main(void) {
                 WSACleanup( );
             return -9;
     }*/
-                closesocket( player->ClientSocket );
+                closesocket( player->ClientSocket[id] );
                 player->playerid[id]=0; //set Place Of Id to 0 if disconnect so other players can take spot;
+                player->ClientSocket[id]=0;
 //free(player);
               //  WSACleanup( );
             return result;
