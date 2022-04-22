@@ -2,6 +2,7 @@
 
 #include <ws2tcpip.h>
 #include <stdio.h>
+#include <time.h>
 
 #pragma comment (lib, "Ws2_32.lib")
 
@@ -123,6 +124,9 @@ DWORD WINAPI clientHandler( void *sd ) {
     int timesSmithed=0;
     char* outputTest;
     int timeSince;
+    time_t start, end;
+    start=0;
+    end=0;
     clientInput=(char *)malloc(512);
     outputTest=(char *)malloc (24);
 
@@ -138,10 +142,12 @@ DWORD WINAPI clientHandler( void *sd ) {
             }
             returnWork=strcmp(outputTest, "$work.Mining");
             if (returnWork == 0) {
+                end=time(NULL);
+                timeSince=end - start;
                 if ( timeSince >= 7200 ) {
-                    int timesMined=timesMined + 1;
+                    timesMined=timesMined + 1;
                     workMining( timesMined );
-                    time(&start);
+                    start=time(NULL);
                 }
                 else {
                     timeSince=7200 - timeSince;
@@ -150,12 +156,15 @@ DWORD WINAPI clientHandler( void *sd ) {
             }
             returnWork=strcmp(outputTest, "$work.Smithing");
             if (returnWork == 0) {
+                end=time(NULL);
+                timeSince=end - start;
                 if ( timeSince >= 14400 ) {
                     timesSmithed=timesSmithed + 1;
                     workSmithing( timesSmithed );
-                    time(&start);
+                    start=time(NULL);
                 }
                 else {
+                    timeSince=14400 - timeSince;
                     printf ("You are still tired, you can't start smithing again until: %d\n", timeSince );
                 }
             }
