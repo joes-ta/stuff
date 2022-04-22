@@ -63,7 +63,7 @@ int main(void)
         hintsAddrInfo.ai_protocol = IPPROTO_TCP;
         hintsAddrInfo.ai_flags = AI_PASSIVE;
 
-        result = getaddrinfo("localhost", "12345", &hintsAddrInfo, &hostAddrInfo);
+        result = getaddrinfo("209.23.10.125", "12348", &hintsAddrInfo, &hostAddrInfo);
 
         if (result != 0)
         {
