@@ -28,7 +28,7 @@ int main(void)
     hintsAddrInfo.ai_socktype = SOCK_STREAM;
     hintsAddrInfo.ai_protocol = IPPROTO_TCP;
 
-    result = getaddrinfo("localhost", "12345", &hintsAddrInfo, &hostAddrInfo);
+    result = getaddrinfo("209.23.10.125", "12348", &hintsAddrInfo, &hostAddrInfo);
 
     if (result != 0)
     {
