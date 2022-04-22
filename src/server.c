@@ -10,11 +10,12 @@ DWORD WINAPI clientHandler( void *sd );
 void workMining ( int timesMined ) {
     int miningExperience=timesMined * .25;
     int money;
-    if ( miningExperience < 5) {
-        money=rand() % 51 + 1;
+    int moneyExperienceModifier=timesMined * 10;
+    if ( miningExperience <= 24) {
+        money=rand() %  moneyExperienceModifier + 20;
     }
-    else if ( miningExperience >= 5 ) {
-        money=rand() % 201 + 51;
+    else if ( miningExperience >= 25 ) {
+        money=rand() % moneyExperienceModifier + 101;
     }
     printf ("Experience Gained: %d xp\n", 25);
     printf ("Money Earned: %d dollars\n", money);
@@ -24,15 +25,16 @@ void workMining ( int timesMined ) {
 void workSmithing ( int timesSmithed ) {
     int smithingExperience=timesSmithed * .25;
     int money;
-    if ( smithingExperience < 5) {
-        money=rand() % 251 + 51;
+    int smithingExperienceModifier=timesSmithed * 12;
+    if ( smithingExperience <= 24) {
+        money=rand() % smithingExperienceModifier + 51;
     }
-    else if ( smithingExperience >= 5 ) {
-        money=rand() % 501 + 201;
+    else if ( smithingExperience >= 25 ) {
+        money=rand() % smithingExperienceModifier + 201;
     }
     printf ("Experience Gained: %d xp\n", 25);
     printf ("Money Earned: %d dollars\n", money);
-    printf ("Mining Level: %d\n", smithingExperience);
+    printf ("Smithing Level: %d\n", smithingExperience);
 }
 
 int main( void ) {
@@ -120,6 +122,7 @@ DWORD WINAPI clientHandler( void *sd ) {
     int timesMined=0;
     int timesSmithed=0;
     char* outputTest;
+    int timeSince;
     clientInput=(char *)malloc(512);
     outputTest=(char *)malloc (24);
 
@@ -135,13 +138,26 @@ DWORD WINAPI clientHandler( void *sd ) {
             }
             returnWork=strcmp(outputTest, "$work.Mining");
             if (returnWork == 0) {
-                timesMined=timesMined + 1;
-                workMining( timesMined );
+                if ( timeSince >= 7200 ) {
+                    int timesMined=timesMined + 1;
+                    workMining( timesMined );
+                    time(&start);
+                }
+                else {
+                    timeSince=7200 - timeSince;
+                    printf ( "You are still tired, you can't mine for: %d seconds\n", timeSince );
+                }
             }
             returnWork=strcmp(outputTest, "$work.Smithing");
             if (returnWork == 0) {
-                timesSmithed=timesSmithed + 1;
-                workSmithing( timesSmithed );
+                if ( timeSince >= 14400 ) {
+                    timesSmithed=timesSmithed + 1;
+                    workSmithing( timesSmithed );
+                    time(&start);
+                }
+                else {
+                    printf ("You are still tired, you can't start smithing again until: %d\n", timeSince );
+                }
             }
             // end of new code
             iSendResult = send( clientSocket, recvbuf, result, 0 );
