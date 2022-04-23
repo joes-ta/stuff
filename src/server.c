@@ -13,26 +13,28 @@ DWORD WINAPI clientHandler(void* player);
 struct player
 {
     unsigned char playerid[30];
-     char *inventory;
-      int health;
-       int wallet;
-        long int bank;
+     char *inventory[30];
+      int health[30];
+       int wallet[30];
+        long int bank[30];
          SOCKET ClientSocket[30];
-         int sockid;
 };
 //Game Mechanics Happen Here
 //Alternated Buffer. *Note:Will send back empty recvbuf for undeveloped mechanics
 void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwrk,
-                char **inventory,int *health,int *wallet, long int *bank,char *message){
-    if( returninv == 0)
+                char **inventory,int *health,int *wallet, long int *bank,char *recvbuf){
+    char str[512];
+    memset(str,0,512);
+    memset(recvbuf,0,512);
+    if( returninv == 0) //Actions for inventory
     {
         //arguments needed
     }
-    if( returnhea == 0)
+    if( returnhea == 0) //Actions for health
     {
         //arguments needed
     }
-    if( returnwal == 0)
+    if( returnwal == 0) //Actions for wallet
     {
         unsigned local=*wallet;
         *wallet=0; *bank=local;
@@ -49,62 +51,59 @@ void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwr
     {
         //arguments needed
     }              
-    };
+};
 
 void see(int returninv,int returnhea,int returnwal, int returnbnk,int returnid,
         char *recvbuf,int *recvbuflen, char *inventory, int health,int wallet, long int bank,unsigned char playerid){
-   char str[512];
+    char str[512];
      memset(str,0,512);
      memset(recvbuf,0,512);
-    if( returnid == 0)
+    if( returnid == 0) //Checking Who I Am
     {
-        printf("ID:%d\n", playerid);
-        char *strltrl="ID:";
-    sprintf(str,"%s%d",strltrl,playerid);
-    strncpy(recvbuf,str,sizeof(str));
-        *recvbuflen=sizeof(&str)+2;
-        //*recvbuflen=sizeof(&strltrl)+sizeof(&playerid); 
-          printf("recvbuf:%s\n",recvbuf);
-            printf("Sizeof:%d\n",*recvbuflen);
+     printf("Your ID:%d\n", playerid);
+      char *strltrl="ID:";
+       sprintf(str,"%s%d",strltrl,playerid); //Creates Text "ID:(ID#)"
+        strncpy(recvbuf,str,sizeof(str));//Copies Text To Recvbuf
+       *recvbuflen=sizeof(&str)+2; //Needs To Be Fixed To be Dynamic
+       printf("recvbuf:%s\n",recvbuf);
+      printf("Sizeof:%d\n",*recvbuflen);
        
     }
-    if( returninv == 0)
+    if( returninv == 0) //Checking Player Inventory
     {
-    printf("Your Inventory:%s\n",inventory);
-       
-            *recvbuflen=sizeof(&inventory)+1;
-            strncpy(recvbuf,inventory,sizeof(inventory)+1);
-            printf("recvbuf:%s\n",recvbuf);
-            printf("Sizeof:%d\n",*recvbuflen);
+     printf("Your Inventory:%s\n",inventory);
+      *recvbuflen=sizeof(&inventory)+1; //Needs To Be Fixed To be Dynamic
+        strncpy(recvbuf,inventory,sizeof(inventory)+1);
+       printf("recvbuf:%s\n",recvbuf);
+      printf("Sizeof:%d\n",*recvbuflen);
     }
-    if( returnhea == 0)
+    if( returnhea == 0) //Checking Player Health
     {
     char *strltrl=" health";
-    sprintf(str,"%d%s",health,strltrl);
-    strncpy(recvbuf,str,sizeof(str));
-            *recvbuflen=sizeof(health)+sizeof(strltrl)+2;
-    printf("Your Health:%s\n",str);
-  printf("recvbuf:%s\n",recvbuf);
-            printf("Sizeof:%d\n",*recvbuflen);
-    
+     sprintf(str,"%d%s",health,strltrl);
+      strncpy(recvbuf,str,sizeof(str));
+       *recvbuflen=sizeof(health)+sizeof(strltrl)+2;////Needs To Be Fixed To be Dynamic
+       printf("Your Health:%s\n",str);
+      printf("recvbuf:%s\n",recvbuf);
+     printf("Sizeof:%d\n",*recvbuflen);    
   }
-    if( returnwal == 0)
+    if( returnwal == 0) //Checking Player Wallet
     {
     printf("Your Wallet: $%d\n",wallet);
     /*char *strltrl="Wallet:$";
     sprintf(str,"%s%d",strltrl,wallet);
     strncpy(recvbuf,str,sizeof(str));
-            *recvbuflen=sizeof();
+            *recvbuflen=sizeof();   //Needs To Be Fixed To be Dynamic
   printf("recvbuf:%s\n",recvbuf);
             printf("Sizeof:%d\n",*recvbuflen);*/
     }
-    if( returnbnk == 0)
+    if( returnbnk == 0) //Checking Player Bank
     {
     printf("Your bank: $%ld\n",bank);
     /*char *strltrl="Bank:$";
     sprintf(str,"%s%d",strltrl,bank);
     strncpy(recvbuf,str,sizeof(str));
-            *recvbuflen=sizeof(bank)+sizeof(*strltrl);
+            *recvbuflen=sizeof(bank)+sizeof(*strltrl); //Needs To Be Fixed To be Dynamic
   printf("recvbuf:%s\n",recvbuf);
             printf("Sizeof:%d\n",*recvbuflen);*/
     }
@@ -203,7 +202,6 @@ int main(void) {
                closesocket( ListenSocket );
        return;
 }
-    
     //Sending And Reciving Happens Here
     //Assignment of Player Ids Happens Here
     //Manipulation Of Client Message Happens Here
@@ -216,41 +214,48 @@ int main(void) {
       int max_clients=30;
      int id;
     int i;
-    
+    //memset(player->wallet,0,30); 
+    //memset(player->bank,0,30);
     for ( i = 0; i < max_clients;)
     {
         if (player->playerid[i]==0)
         {
             player->playerid[i]=player->ClientSocket[i]; //Register Id in PlayerId array
             id=i; //Store Id Array Location
+            player->wallet[id];//Create Player Wallet
+            player->bank[id]; //Create Player Bank
+            player->health[id]; //Create Player Health
+            player->inventory[id]; //Create Player Inventory;
             break;
         }
         i++;
     }
-
-        player->inventory="A Joe";
-        player->health=100;
-        player->wallet=1000;
-        player->bank=0;
+     printf("CSock: %d | player->csock: %d | I : %d\n",ClientSocket,player->ClientSocket[i],id);
+        //Generic Values Set Here //To Be Replaced By Saved Data
+        player->inventory[id]="A Joe";
+        player->health[id]=100;
+        player->wallet[id]=1000;
+        player->bank[id]=0;
         do { 
-            char recvbuf[512];
-      int recvbuflen = 512;
+        char recvbuf[512];
+         int recvbuflen = 512;
+            
             result = recv( player->ClientSocket[id],recvbuf, recvbuflen, 0 );
             
         if( result > 0 ) {
-        char *message;
-         int returninv;
-          int returnhea;
-           int returnid;
+         char *message;
+          int returninv;
+           int returnhea;
+            int returnid;
            int returnwal;
           int returnwrk;
          int returnbnk;
         int quitret;
          int recvbuflen=(int)strlen(recvbuf);    
             message=(char *)malloc(512);
-                strcpy(message,recvbuf);
-                sscanf("%s",message); //Copies data of format string from variable (message)
-                printf("Message received:%s\n",message);
+             strcpy(message,recvbuf);
+              sscanf("%s",message); //Copies data of format string from variable (message)
+               printf("Message received:%s\n",message);
                 switch (recvbuf[0])
                 {
                 case '?':
@@ -260,7 +265,7 @@ int main(void) {
                 returnbnk=strcmp(message, "?bank");
                 returnid=strcmp(message,  "?me");
             see(returninv,returnhea,returnwal,returnbnk,returnid,recvbuf,&recvbuflen,
-                player->inventory,player->health,player->wallet,player->bank,player->playerid[id]);
+                player->inventory[id],player->health[id],player->wallet[id],player->bank[id],player->playerid[id]);
                 break;
                 case '$':
                 returninv=strcmp(message, "$inventory");
@@ -268,7 +273,7 @@ int main(void) {
                 returnwal=strcmp(message, "$wallet");
                 returnbnk=strcmp(message, "$bank");
             action(returninv,returnhea,returnwal,returnbnk,returnwrk,
-                &player->inventory,&player->health,&player->wallet,&player->bank,message);
+                &player->inventory[id],&player->health[id],&player->wallet[id],&player->bank[id],recvbuf);
                 break;
                 case 'q':
                 closesocket(player->ClientSocket[id]);
@@ -284,8 +289,8 @@ int main(void) {
             if (player->playerid[i+1]==0)
                 break;   
             }
-           printf("recvbuf:%s\n",recvbuf);
-            printf("Sizeof:%d\n",recvbuflen);
+           //printf("recvbuf:%s\n",recvbuf);
+            //printf("Sizeof Message:%d\n",recvbuflen);
     
    
             iSendResult = send(player->ClientSocket[id], recvbuf, recvbuflen, 0 );
@@ -311,17 +316,17 @@ int main(void) {
         }
 
     }   while( result > 0 );
-           /*result = shutdown( ClientSocket, SD_SEND );
+           result = shutdown( player->ClientSocket[id], SD_SEND );
         if( result == SOCKET_ERROR ) {
                 printf( "shutdown failed with error: %d\n", WSAGetLastError( ) );
-                closesocket( player->ClientSocket );
+                closesocket( player->ClientSocket[id] );
                 WSACleanup( );
             return -9;
-    }*/
+    } else
                 closesocket( player->ClientSocket[id] );
-                player->playerid[id]=0; //set Place Of Id to 0 if disconnect so other players can take spot;
-                player->ClientSocket[id]=0;
-//free(player);
+                player->playerid[id]=0; //Free Player ID Slot upon client exit.
+                player->ClientSocket[id]=0; //Free Client Socket upon client exit.
+               //free(player);
               //  WSACleanup( );
             return result;
     
