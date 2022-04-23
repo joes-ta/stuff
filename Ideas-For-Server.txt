@@ -1,0 +1,18 @@
+->Saved Data and Using it.
+->Arguments (Ex. $Rob ___, $Withdrawal___)
+->Stable Form Of Sending Client Altered Data
+->Usernames
+->Chat Mechanic
++Timeout for spam
+->Game Mechanics
++Active Users Display (ex."?online")
++Timeout for work
++Random Events/Items
++XP/Stats
++More Commands, (Ex.$Rob)
+->Stablization
++Time out Inactive Users
++Fix Server Crash When Client Closes Tab
+->Cleanliness
+
+
