@@ -8,9 +8,10 @@
 
 DWORD WINAPI clientHandler( void *sd );
 
-void workMining ( int timesMined ) {
+int workMining ( int timesMined, int currentMoney ) {
     int miningExperience=timesMined * .25;
     int money;
+    timesMined=timesMined+1;
     int moneyExperienceModifier=timesMined * 10;
     if ( miningExperience <= 24) {
         money=rand() %  moneyExperienceModifier + 20;
@@ -21,9 +22,11 @@ void workMining ( int timesMined ) {
     printf ("Experience Gained: %d xp\n", 25);
     printf ("Money Earned: %d dollars\n", money);
     printf ("Mining Level: %d\n", miningExperience);
+    int wallet=currentMoney + money;
+    return wallet;
 }
 
-void workSmithing ( int timesSmithed ) {
+int workSmithing ( int timesSmithed, int currentMoney ) {
     int smithingExperience=timesSmithed * .25;
     int money;
     int smithingExperienceModifier=timesSmithed * 12;
@@ -36,6 +39,25 @@ void workSmithing ( int timesSmithed ) {
     printf ("Experience Gained: %d xp\n", 25);
     printf ("Money Earned: %d dollars\n", money);
     printf ("Smithing Level: %d\n", smithingExperience);
+    int wallet=currentMoney + money;
+    return wallet;
+}
+
+int workTeaching ( int timesTaught, int currentMoney ) {
+    int teachingExperience=timesTaught * .25;
+    int money;
+    int teachingExperienceModifier=timesTaught * 11;
+    if ( teachingExperience <= 24) {
+        money=rand() % teachingExperienceModifier + 26;
+    }
+    else if ( teachingExperience >= 25 ) {
+        money=rand() % teachingExperienceModifier + 151;
+    }
+    printf ("Experience Gained: %d xp\n", 25);
+    printf ("Money Earned: %d dollars\n", money);
+    printf ("Teaching Level: %d\n", teachingExperience);
+    int wallet=currentMoney + money;
+    return wallet;
 }
 
 int main( void ) {
@@ -122,13 +144,18 @@ DWORD WINAPI clientHandler( void *sd ) {
     int workNotSpecified;
     int timesMined=0;
     int timesSmithed=0;
+    int timesTaught=0;
     char* outputTest;
     int timeSince;
+    int bankMoney=0;
+    char* bankOption;
+    int wallet=0;
     time_t start, end;
     start=0;
     end=0;
     clientInput=(char *)malloc(512);
     outputTest=(char *)malloc (24);
+    srand((unsigned) time(NULL));
 
 	do {
         result = recv( clientSocket, recvbuf, recvbuflen, 0 );
@@ -146,7 +173,7 @@ DWORD WINAPI clientHandler( void *sd ) {
                 timeSince=end - start;
                 if ( timeSince >= 7200 ) {
                     timesMined=timesMined + 1;
-                    workMining( timesMined );
+                    wallet=workMining( timesMined, wallet );
                     start=time(NULL);
                 }
                 else {
@@ -160,14 +187,37 @@ DWORD WINAPI clientHandler( void *sd ) {
                 timeSince=end - start;
                 if ( timeSince >= 14400 ) {
                     timesSmithed=timesSmithed + 1;
-                    workSmithing( timesSmithed );
+                    wallet=workSmithing( timesSmithed, wallet );
                     start=time(NULL);
                 }
                 else {
                     timeSince=14400 - timeSince;
-                    printf ("You are still tired, you can't start smithing again until: %d\n", timeSince );
+                    printf ("You are still tired, you can't start smithing again for: %d seconds\n", timeSince );
                 }
             }
+            returnWork=strcmp(outputTest, "$work.Teaching");
+            if (returnWork == 0) {
+                end=time(NULL);
+                timeSince=end - start;
+                if ( timeSince >= 10800 ) {
+                    timesTaught=timesTaught + 1;
+                    wallet=workTeaching( timesTaught, wallet );
+                    start=time(NULL);
+                }
+                else {
+                    timeSince=10800 - timeSince;
+                    printf ("You are still tired, you can't start teaching again for: %d seconds\n", timeSince );
+                }
+            }
+            // end of work
+            // start of wallet
+            returnWork=strcmp(outputTest, "$wallet");
+            if (returnWork == 0) {
+                printf ("You currently have %d dollars in your wallet.\n", wallet);
+            }
+            // end of wallet 
+            // start of bank
+            // end of bank
             // end of new code
             iSendResult = send( clientSocket, recvbuf, result, 0 );
             if( iSendResult == SOCKET_ERROR ) {
