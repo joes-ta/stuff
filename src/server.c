@@ -38,7 +38,7 @@ void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwr
     {
         unsigned local=*wallet;
         *wallet=0; *bank=local;
-        printf("Money Deposited To Bank:%d\n",*bank);
+        printf("Money Deposited To Bank:%d\n",*bank); 
         char *strltrl="You Deposited: $";
     sprintf(recvbuf,"%s%d",strltrl,local);
     *recvbuflen=(int)strlen(recvbuf);
