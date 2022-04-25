@@ -26,7 +26,7 @@ void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwr
     char str[512];
     memset(str,0,512);
     memset(recvbuf,0,512);
-    if( returninv == 0) //Actions for inventory
+    if( returninv == 0) //Actions for inventory               make way for username connection to read from file to initialize information
     {
         //arguments needed
     }
@@ -61,7 +61,7 @@ void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwr
 
 void see(int returninv,int returnhea,int returnwal, int returnbnk,int returnid,
         char *recvbuf,int *recvbuflen, char *inventory, int health,int wallet, long int bank,unsigned char playerid){
-    char str[512];
+     char str[512];
      memset(str,0,512);
      memset(recvbuf,0,512);
     if( returnid == 0) //Checking Who I Am
@@ -302,7 +302,7 @@ int main(void) {
                 WSACleanup( );
             return -7;
             }
-                printf( "Bytes sent: %d\n", iSendResult);
+                //printf( "Bytes sent: %d\n", iSendResult);
                 //printf("From Server\n");
         }
         
