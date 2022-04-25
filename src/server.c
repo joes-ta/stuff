@@ -168,7 +168,7 @@ int main(void)
                     printf("Error\n");
                     break;
                 }
-                printf("Message received:%s\n", message);
+                //printf("Message received:%s\n", message);
                 //printf("\nFrom Client\n");
                 iSendResult = send(ClientSocket, recvbuf, result, 0);
 

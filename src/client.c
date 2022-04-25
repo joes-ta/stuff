@@ -92,9 +92,9 @@ int main(void)
             WSACleanup();
             return -5;
         }
-        printf("Message Sent:%s\n", input);
-        printf("Bytes Sent: %d\n", result);
-        printf("From Client\n\nPayload:\n");
+        //printf("Message Sent:%s\n", input);
+        //printf("Bytes Sent: %d\n", result);
+        //printf("From Client\n\nPayload:\n");
         int preview = 0;
         int total = 0;
         char communicate;
@@ -111,7 +111,7 @@ int main(void)
                 preview += result;
             }
 
-            printf("\n\nThis Was From The Server\n\n");
+            //printf("\n\nThis Was From The Server\n\n");
         }
         else if (result == 0)
             printf("Connection Gets Closed Here\n");
