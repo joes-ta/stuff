@@ -148,6 +148,11 @@ DWORD WINAPI clientHandler( void *sd ) {
     char* outputTest;
     int timeSince;
     int bankMoney=0;
+    int invalidDeposit=0;
+    int withdrawMoney=0;
+    int withdrawPrevious=0;
+    int depositPrevious=0;
+    char* previous;
     char* bankOption;
     int wallet=0;
     time_t start, end;
@@ -217,6 +222,55 @@ DWORD WINAPI clientHandler( void *sd ) {
             }
             // end of wallet 
             // start of bank
+            returnWork=strcmp(outputTest, "$bank");
+            if (returnWork == 0) {
+                printf ("The teller asks if you would like to:\n   1) Deposit Money\n   2) Withdraw Money\n   3) Check Your Balance\nPlease enter $1, $2, or $3.\n");
+            }
+            returnWork=strcmp(outputTest, "$1");
+            if (returnWork == 0) {
+                printf ("How much would you like to deposit?\n The maximum amount you can deposit is: %d\n", wallet);
+                depositPrevious=1;
+            }
+            if (depositPrevious == 1) {
+                invalidDeposit=atoi(outputTest);
+                returnWork=strcmp(outputTest, "$1");
+                if (invalidDeposit > wallet) {
+                    printf ("You cannot deposit more money than you have.\n");
+                }
+                else if (returnWork != 0) {
+                    bankMoney=invalidDeposit+bankMoney;
+                    wallet=wallet - invalidDeposit;
+                    printf ("You currently have %d dollars in the bank.\n", bankMoney);
+                    depositPrevious=0;
+                }
+            }
+            returnWork=strcmp(outputTest, "$2");
+            if (returnWork == 0) {
+                if (bankMoney == 0) {
+                    printf ("You have no money in the bank.");
+                }
+                else {
+                    printf ("How much would you like to withdraw?\nThe most you can withdraw is: %d\n", bankMoney);
+                    withdrawPrevious=1;
+                }
+            }
+            if (withdrawPrevious == 1) {
+                withdrawMoney=atoi(outputTest);
+                returnWork=strcmp(outputTest, "$2");
+                if (bankMoney < withdrawMoney) {
+                    printf ("You cannot withdraw more than you have in the bank.\n");
+                }
+                else if (returnWork != 0) {
+                    bankMoney=bankMoney - withdrawMoney;
+                    wallet=wallet + withdrawMoney;
+                    printf ("You now have %d in the bank.\n", bankMoney);
+                    withdrawPrevious=0;
+                }
+            }
+            returnWork=strcmp(outputTest, "$3");
+            if (returnWork == 0) {
+                printf ("Your balance is: %d\n", bankMoney);
+            }
             // end of bank
             // end of new code
             iSendResult = send( clientSocket, recvbuf, result, 0 );

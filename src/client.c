@@ -13,6 +13,8 @@ int main( void ) {
     int recvbuflen = 512;
     char *input= (char *)malloc(512);
     int result;
+    int bankSelector;
+    int* bankAmount=0;
     char *quit="quit";
     int ret;    
     result = WSAStartup( MAKEWORD( 2,2 ), &wsaData );
@@ -81,6 +83,14 @@ int main( void ) {
         result = recv( hostSock, recvbuf, recvbuflen, 0 );
     if ( result > 0 ) {
         total += result;
+        bankSelector=strcmp(recvbuf,"$1");
+        if (bankSelector == 0) {
+            fscanf (stdout, "%d", bankAmount);
+        }
+        bankSelector=strcmp(recvbuf,"$2");
+        if (bankSelector == 0) {
+            fscanf (stdout, "%d", bankAmount);
+        }
     if( preview < 1000 && ret!=0) {fwrite(recvbuf, 1, result, stdout); preview += result; } 
             printf("\n\nThis Was From The Server\n\n");
         } 
@@ -88,7 +98,7 @@ int main( void ) {
             printf( "Connection Gets Closed Here\n" );    
     else
             printf( "recv failed with error: %d\n", WSAGetLastError( ) );
-         } 
+         }
     while(ret!=0);
 
             closesocket( hostSock );
