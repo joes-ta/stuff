@@ -26,7 +26,7 @@ int main( void ) {
     hintsAddrInfo.ai_protocol = IPPROTO_TCP;
     hintsAddrInfo.ai_flags = AI_PASSIVE;
 
-    result = getaddrinfo( "10.211.55.6", "12345", &hintsAddrInfo, &hostAddrInfo );
+    result = getaddrinfo( "localhost", "12345", &hintsAddrInfo, &hostAddrInfo );
     if ( result != 0 ) {
         printf( "getaddrinfo failed with error: %d\n", result );
         WSACleanup( );
