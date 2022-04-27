@@ -1,18 +1,19 @@
 ->Saved Data and Using it.
 ->Arguments (Ex. $Rob ___, $Withdrawal___)
+->Stablization
++Time out Inactive Users
++Fix Server Crash When Client Closes Tab
 ->Stable Form Of Sending Client Altered Data
 ->Usernames
-->Chat Mechanic
++Scanning for username
++Username array
+->Chat Mechanic/Broadcasting to other users
 +Timeout for spam
 ->Game Mechanics
 +Active Users Display (ex."?online")
 +Timeout for work
 +Random Events/Items
 +XP/Stats
-+More Commands, (Ex.$Rob)
-->Stablization
-+Time out Inactive Users
-+Fix Server Crash When Client Closes Tab
++More Commands, (Ex.$Rob,?Enviroment,$Buy,etc.)
 ->Cleanliness
-
-
++Server Runs In the Background
