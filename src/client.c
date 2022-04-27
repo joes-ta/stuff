@@ -16,7 +16,8 @@ int main( void ) {
     int bankSelector;
     int* bankAmount=0;
     char *quit="quit";
-    int ret;    
+    char *true="true";
+    int ret;
     result = WSAStartup( MAKEWORD( 2,2 ), &wsaData );
     if ( result != 0 ) {
         printf( "WSAStartup failed with error: %d\n", result );
@@ -38,12 +39,12 @@ int main( void ) {
             attemptAddrInfo->ai_protocol );
     if( hostSock == INVALID_SOCKET ) {
             printf( "socket failed with error: %ld\n", WSAGetLastError( ) );
-            WSACleanup( );
+            WSACleanup ( );
         return -3;
         }
         result = connect( hostSock, attemptAddrInfo->ai_addr, (int)attemptAddrInfo->ai_addrlen);
     if( result == SOCKET_ERROR ) {
-            closesocket( hostSock );
+        closesocket (hostSock);
         hostSock = INVALID_SOCKET;
         continue;
         }
@@ -100,7 +101,6 @@ int main( void ) {
             printf( "recv failed with error: %d\n", WSAGetLastError( ) );
          }
     while(ret!=0);
-
             closesocket( hostSock );
             WSACleanup( );
     return 0;

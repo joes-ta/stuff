@@ -166,6 +166,7 @@ DWORD WINAPI clientHandler( void *sd ) {
         result = recv( clientSocket, recvbuf, recvbuflen, 0 );
         if( result > 0 ) {
             // new code
+            // start work
             printf( "Bytes received: %d\n", result );
             outputTest=recvbuf;
             workNotSpecified=strcmp(outputTest, "$work");
@@ -286,13 +287,10 @@ DWORD WINAPI clientHandler( void *sd ) {
             printf( "Connection closing...\n" );
         else  {
             printf( "recv failed with error: %d\n", WSAGetLastError( ) );
-            closesocket( clientSocket );
-            WSACleanup( );
             return -8;
         }
 
     } while( result > 0 );
-
     result = shutdown( clientSocket, SD_BOTH );
     if( result == SOCKET_ERROR ) {
         printf( "shutdown failed with error: %d\n", WSAGetLastError( ) );
