@@ -154,7 +154,7 @@ int main(void) {
             if( ListenSocket == INVALID_SOCKET ) {
                     printf( "socket failed with error: %ld\n", WSAGetLastError( ) );
                     freeaddrinfo( hostAddrInfo );
-                    WSACleanup( );
+                    //WSACleanup( );
                 return -3;
     }
 
@@ -164,7 +164,7 @@ int main(void) {
                 printf( "bind failed with error: %d\n", WSAGetLastError( ) );
                 freeaddrinfo( hostAddrInfo );
                 closesocket( ListenSocket );
-                WSACleanup( );
+                //WSACleanup( );
             return -4;
     }
                 freeaddrinfo( hostAddrInfo );
@@ -174,7 +174,7 @@ int main(void) {
         if( result == SOCKET_ERROR ) {
                 printf( "listen failed with error: %d\n", WSAGetLastError( ) );
                 closesocket( ListenSocket );
-                WSACleanup( );
+                //WSACleanup( );
             return -5;
     }
     
@@ -196,7 +196,7 @@ int main(void) {
         if( ClientSocket == INVALID_SOCKET ) {
                 printf( "accept failed with error: %d\n", WSAGetLastError( ) );
                 closesocket( ListenSocket );
-                WSACleanup( );
+                //WSACleanup( );
             return -6;
             }
     CreateThread(0,0,clientHandler, (void *)player,0,&threadID);
@@ -299,7 +299,7 @@ int main(void) {
         if( iSendResult == SOCKET_ERROR ) {
                 printf( "send failed with error: %d\n", WSAGetLastError( ) );
                 closesocket( player->ClientSocket[id] );
-                WSACleanup( );
+                //WSACleanup( );
             return -7;
             }
                 printf( "Bytes sent: %d\n", iSendResult);
@@ -312,7 +312,7 @@ int main(void) {
         else  {
                 printf( "recv failed with error: %d\n", WSAGetLastError( ) );
                 closesocket( player->ClientSocket[id] );
-                WSACleanup( );
+                //WSACleanup( );
             return -8;
         }
 
@@ -321,7 +321,7 @@ int main(void) {
         if( result == SOCKET_ERROR ) {
                 printf( "shutdown failed with error: %d\n", WSAGetLastError( ) );
                 closesocket( player->ClientSocket[id] );
-                WSACleanup( );
+                //WSACleanup( );
             return -9;
     } else
                 closesocket( player->ClientSocket[id] );
