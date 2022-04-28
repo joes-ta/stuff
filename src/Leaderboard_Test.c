@@ -1,57 +1,73 @@
-#include <iostream>
+#include <stdio.h>
+#include <string.h>
 
-//Every person has a specified place in original array, so to show correct name besides the leaderboard,
-// I will have to search the original leaderboard for the displayed balance, then use case statement to
-// determine which element matches, and check who's element that is
-//---------------------------------
-
-
-//IF THE BALANCE IS THE SAME- Go through amount of repeated balances, and for each display a different name of someone with that balance
-
+struct player
+{
+    unsigned int playerid;
+    int health;
+    char Name[15];
+    int wallet;
+    long int bank;
+};
 
 //In main function, create int returnldr and also add returnldr in the see function (displays the appropriate players data)
-void Action(int returnLeaderboard, int PlayerBankData[15], int arrSize, std::string PlayerName[15])
+void Action(int returnLeaderboard, int arrSize, player players[15])
 {
-    int SortedBankData[15];
+    player sortedPlayers[15];
 
     if (returnLeaderboard == 0)
     {
         //Temporarily stores the smaller of the two values checked, so it can be stored in i+1
-        int temporaryData;
+        player tempPlayer;
 
+        bool isSame=true;
         for (int j = 0; j < arrSize; j++)
         {
-            SortedBankData[j] = PlayerBankData[j];
+            sortedPlayers[j] = players[j];
         }
-
+                                                                                                                                                                                                                                                  
         for (int i = 0; i < arrSize; i++)
         {
             //k will always be one more than i, which allows comparison of two elements in the array
             for (int k = i + 1; k < arrSize; k++)
             {
-                if (SortedBankData[i] < SortedBankData[k])
+                //Sorts player struct based on balances
+                if (sortedPlayers[i].bank < sortedPlayers[k].bank)
                 {
-                    temporaryData = SortedBankData[i];
-                    SortedBankData[i] = SortedBankData[k];
-                    SortedBankData[k] = temporaryData;
+                    tempPlayer = sortedPlayers[i];
+                    sortedPlayers[i] = sortedPlayers[k];
+                    sortedPlayers[k] = tempPlayer;
                 }
             }
         }
 
-        for (int n = 0; n < arrSize; n++)
+
+        printf("Leaderboard:\n+---------------------------------------------------+\n");
+        for (int i = 0; i < arrSize; i++)
         {
-            //std::cout << PlayerName[n];
-            //printf("%s\n", PlayerName[n]);
-            printf(" % d\n", SortedBankData[n]);
+            printf("|Balance: %-10d|PlayerID: %-5d|Name: %-8s |\n", sortedPlayers[i].bank, sortedPlayers[i].playerid, sortedPlayers[i].Name);
         }
+        printf("+---------------------------------------------------+\n");
     }
 }
 
 int main()
 {
-    int PlayerBankData[15] = { 100, 30, 500, 50, 300, 29, 1001, 3883, 289398, 123, 12, 0, 3, 2, 4 };
-    std::string PlayerName[15] = { "John", "Logan", "Matt", "Joe", "Bob", "Bart", "Homer", "Flower", "heh", "Test", "Test1", "Test2", "Test3", "Test4", "Test5" };
-    int arrSize = sizeof(PlayerBankData) / sizeof(PlayerBankData[0]);
+    int const playerAmount = 15;
+    int long PlayerBankData[15] = { 100, 30, 500, 50, 300, 29, 1001, 3883, 23432, 123, 100, 0, 3, 2, 4 };
+    const char* Name[15] = {"Test1", "Test2", "Test3", "Test4", "Test5", "Test6", "Test7", "Test8","Test9", "Test10", "Test11", "Test12", "Test13", "Test14", "Test15"};
+    
+    int arrSize = playerAmount;
+    
+    struct player game_Players[playerAmount];
+    //Populates game_Players structs with stored information
+    for (int a = 0; a < playerAmount; a++)
+    {
+        game_Players[a].playerid = a;
+        strcpy_s(game_Players[a].Name, Name[a]);
+        game_Players[a].bank = PlayerBankData[a];
+    }
+
     int return_Leaderboard = 0;
-    Action(return_Leaderboard, PlayerBankData, arrSize, PlayerName);
+    Action(return_Leaderboard, arrSize, game_Players);
 }
