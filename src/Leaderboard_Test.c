@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 struct player
 {
@@ -10,64 +11,70 @@ struct player
     long int bank;
 };
 
-//In main function, create int returnldr and also add returnldr in the see function (displays the appropriate players data)
-void Action(int returnLeaderboard, int arrSize, player players[15])
-{
-    player sortedPlayers[15];
+typedef struct player Player;
 
+//In main function, create int returnldr and also add returnldr in the see function (displays the appropriate players data)
+void Action(int returnLeaderboard, int arrSize, Player * players)
+{    
     if (returnLeaderboard == 0)
     {
         //Temporarily stores the smaller of the two values checked, so it can be stored in i+1
-        player tempPlayer;
+        struct player tempPlayer;
 
-        bool isSame=true;
-        for (int j = 0; j < arrSize; j++)
+        // allocate an array of players to match the size
+        // of the incoming players
+        Player* sortedPlayers = (Player*)malloc(arrSize);
+
+        if (sortedPlayers != NULL)
         {
-            sortedPlayers[j] = players[j];
-        }
-                                                                                                                                                                                                                                                  
-        for (int i = 0; i < arrSize; i++)
-        {
-            //k will always be one more than i, which allows comparison of two elements in the array
-            for (int k = i + 1; k < arrSize; k++)
+            // Copy players
+            memcpy(sortedPlayers, players, sizeof(Player) * arrSize);
+
+            for (int i = 0; i < arrSize; i++)
             {
-                //Sorts player struct based on balances
-                if (sortedPlayers[i].bank < sortedPlayers[k].bank)
+                //k will always be one more than i, which allows comparison of two elements in the array
+                for (int k = i + 1; k < arrSize; k++)
                 {
-                    tempPlayer = sortedPlayers[i];
-                    sortedPlayers[i] = sortedPlayers[k];
-                    sortedPlayers[k] = tempPlayer;
+                    //Sorts player struct based on balances
+                    if (sortedPlayers[i].bank < sortedPlayers[k].bank)
+                    {
+                        tempPlayer = sortedPlayers[i];
+                        sortedPlayers[i] = sortedPlayers[k];
+                        sortedPlayers[k] = tempPlayer;
+                    }
                 }
             }
-        }
 
+            printf("Leaderboard:\n+---------------------------------------------------+\n");
+            for (int i = 0; i < arrSize; i++)
+            {
+                printf("|Balance: %-10d|PlayerID: %-5d|Name: %-8s |\n", sortedPlayers[i].bank, sortedPlayers[i].playerid, sortedPlayers[i].Name);
+            }
+            printf("+---------------------------------------------------+\n");
 
-        printf("Leaderboard:\n+---------------------------------------------------+\n");
-        for (int i = 0; i < arrSize; i++)
-        {
-            printf("|Balance: %-10d|PlayerID: %-5d|Name: %-8s |\n", sortedPlayers[i].bank, sortedPlayers[i].playerid, sortedPlayers[i].Name);
+            free(sortedPlayers);
         }
-        printf("+---------------------------------------------------+\n");
     }
 }
 
 int main()
 {
-    int const playerAmount = 15;
+    const int playerAmount = 15;
     int long PlayerBankData[15] = { 100, 30, 500, 50, 300, 29, 1001, 3883, 23432, 123, 100, 0, 3, 2, 4 };
     const char* Name[15] = {"Test1", "Test2", "Test3", "Test4", "Test5", "Test6", "Test7", "Test8","Test9", "Test10", "Test11", "Test12", "Test13", "Test14", "Test15"};
-    
-    int arrSize = playerAmount;
-    
-    struct player game_Players[playerAmount];
+        
+    struct player game_Players[15];
+
     //Populates game_Players structs with stored information
     for (int a = 0; a < playerAmount; a++)
     {
         game_Players[a].playerid = a;
-        strcpy_s(game_Players[a].Name, Name[a]);
+        
+        strcpy_s(game_Players[a].Name, sizeof(Name[a]), Name[a]);
+
         game_Players[a].bank = PlayerBankData[a];
     }
 
     int return_Leaderboard = 0;
-    Action(return_Leaderboard, arrSize, game_Players);
+    Action(return_Leaderboard, playerAmount, game_Players);
 }
