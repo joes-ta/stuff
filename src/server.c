@@ -15,7 +15,7 @@ struct player {
     int timesSmithed[30];
     int timesTaught[30];
     int timesMined[30];
-} *player1;
+} player1;
 
 int workMining ( int timesMined, int currentMoney ) {
     int miningExperience=timesMined * .25;
@@ -182,10 +182,7 @@ DWORD WINAPI clientHandler( void *sd ) {
             // usernames
             if (recvbuf != NULL) {
                 while (fgets(username, sizeof(username), usernames) != NULL) fgets(username, sizeof(username), usernames);
-                memcpy(player1->playerUsername[1], username, sizeof(player1->playerUsername[1]));
-                for (arrayCopy=1; arrayCopy <= 24; arrayCopy++) {
-                    printf ("%c", player1->playerUsername[1][arrayCopy]);
-                }
+                memcpy(player1.playerUsername[0], username, sizeof(player1.playerUsername[0]));
             }
             // usernames end
             // start work
