@@ -23,7 +23,7 @@ void Action(int returnLeaderboard, int arrSize, Player* players)
 
         // allocate an array of players to match the size
         // of the incoming players
-        Player* sortedPlayers = (Player*)malloc(arrSize);
+        Player* sortedPlayers = (Player*)malloc(sizeof(Player) * arrSize);
 
         if (sortedPlayers != NULL)
         {
