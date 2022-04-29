@@ -8,6 +8,15 @@
 
 DWORD WINAPI clientHandler( void *sd );
 
+struct player {
+    char playerUsername[30][24];
+    int wallet[30];
+    int bankMoney[30];
+    int timesSmithed[30];
+    int timesTaught[30];
+    int timesMined[30];
+} *player1;
+
 int workMining ( int timesMined, int currentMoney ) {
     int miningExperience=timesMined * .25;
     int money;
@@ -164,8 +173,14 @@ DWORD WINAPI clientHandler( void *sd ) {
 
 	do {
         result = recv( clientSocket, recvbuf, recvbuflen, 0 );
+        FILE* usernames=fopen("projectUsers.txt", "r");
+        char username[24];
         if( result > 0 ) {
             // new code
+            if (recvbuf != NULL) {
+                fgets(username, sizeof(username), usernames);
+                printf ("Username: %s\n", username);
+            }
             // start work
             printf( "Bytes received: %d\n", result );
             outputTest=recvbuf;

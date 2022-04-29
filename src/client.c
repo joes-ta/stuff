@@ -9,24 +9,27 @@ int main( void ) {
     WSADATA wsaData;
     SOCKET hostSock = INVALID_SOCKET;
     struct addrinfo *hostAddrInfo = NULL, *attemptAddrInfo = NULL, hintsAddrInfo;
-    FILE* usernames=fopen("projectUsers.txt", "w");
     char username[24];
     char recvbuf[ 512 ];
     int recvbuflen = 512;
     char *input= (char *)malloc(512);
     int result;
     int bankSelector;
+    int alternate=0;
     int* bankAmount=0;
     char *quit="quit";
     char *true="true";
     int ret;
     result = WSAStartup( MAKEWORD( 2,2 ), &wsaData );
+    FILE* usernames=fopen("projectUsers.txt", "a");
+    // username system
     printf("Please enter your username, if you have not created one, pick one between 1 and 24 characters: ");
     scanf("%s", username);
     printf ("Username: %s\n", username);
-    fprintf (usernames, "%s\n", username);
+    fprintf (usernames, "\n%s", username);
     fclose(usernames);
     printf ("\n");
+    // username system end
     if ( result != 0 ) {
         printf( "WSAStartup failed with error: %d\n", result );
         return -1;
