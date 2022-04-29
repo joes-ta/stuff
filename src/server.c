@@ -161,6 +161,7 @@ DWORD WINAPI clientHandler( void *sd ) {
     int withdrawMoney=0;
     int withdrawPrevious=0;
     int depositPrevious=0;
+    int arrayCopy;
     char* previous;
     char* bankOption;
     int wallet=0;
@@ -174,13 +175,19 @@ DWORD WINAPI clientHandler( void *sd ) {
 	do {
         result = recv( clientSocket, recvbuf, recvbuflen, 0 );
         FILE* usernames=fopen("projectUsers.txt", "r");
+        char previousUsername[24];
         char username[24];
         if( result > 0 ) {
             // new code
+            // usernames
             if (recvbuf != NULL) {
-                fgets(username, sizeof(username), usernames);
-                printf ("Username: %s\n", username);
+                while (fgets(username, sizeof(username), usernames) != NULL) fgets(username, sizeof(username), usernames);
+                memcpy(player1->playerUsername[1], username, sizeof(player1->playerUsername[1]));
+                for (arrayCopy=1; arrayCopy <= 24; arrayCopy++) {
+                    printf ("%c", player1->playerUsername[1][arrayCopy]);
+                }
             }
+            // usernames end
             // start work
             printf( "Bytes received: %d\n", result );
             outputTest=recvbuf;
