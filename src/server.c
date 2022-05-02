@@ -162,6 +162,8 @@ DWORD WINAPI clientHandler( void *sd ) {
     int withdrawPrevious=0;
     int depositPrevious=0;
     int arrayCopy;
+    int emptyCheck=0;
+    int usernameCheck=0;
     char* previous;
     char* bankOption;
     int wallet=0;
@@ -182,8 +184,17 @@ DWORD WINAPI clientHandler( void *sd ) {
             // usernames
             if (recvbuf != NULL) {
                 while (fgets(username, sizeof(username), usernames) != NULL) fgets(username, sizeof(username), usernames);
-                memcpy(player1.playerUsername[0], username, sizeof(player1.playerUsername[0]));
+                do { 
+                    memcpy(player1.playerUsername[emptyCheck], username, sizeof(player1.playerUsername[emptyCheck]));
+                    emptyCheck++;
+                } while (emptyCheck < 25);
             }
+            while (usernameCheck != 25) {
+                if (strcmp(player1.playerUsername[usernameCheck], username) == 0) break;
+                usernameCheck++;
+            }
+            printf ("Username Position is: player1.playerUsername[%d]\n", usernameCheck);
+            // usernameCheck is the value used for pulling other values out of struct
             // usernames end
             // start work
             printf( "Bytes received: %d\n", result );
