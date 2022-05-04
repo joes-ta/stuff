@@ -161,6 +161,7 @@ DWORD WINAPI clientHandler( void *sd ) {
     int withdrawMoney=0;
     int withdrawPrevious=0;
     int depositPrevious=0;
+    int initalizeUsernames=0;
     int arrayCopy;
     int emptyCheck=0;
     int usernameCheck=0;
@@ -182,16 +183,22 @@ DWORD WINAPI clientHandler( void *sd ) {
         if( result > 0 ) {
             // new code
             // usernames
-            if (recvbuf != NULL) {
-                while (fgets(username, sizeof(username), usernames) != NULL) fgets(username, sizeof(username), usernames);
-                do { 
-                    memcpy(player1.playerUsername[emptyCheck], username, sizeof(player1.playerUsername[emptyCheck]));
-                    emptyCheck++;
-                } while (emptyCheck < 25);
+            while (initalizeUsernames < 25) {
+                strncpy(player1.playerUsername[initalizeUsernames], "username", 24);
+                initalizeUsernames++;
+            }
+            while (emptyCheck < 25) {
+                while (fgets(username, 24, usernames) != NULL) fgets(username, 24, usernames);
+                if (strcmp(player1.playerUsername[emptyCheck], "username") == 0) memcpy(player1.playerUsername[emptyCheck], username, 24);
+                emptyCheck++;
             }
             while (usernameCheck != 25) {
                 if (strcmp(player1.playerUsername[usernameCheck], username) == 0) break;
                 usernameCheck++;
+            }
+            returnWork=strcmp(outputTest, "$usernameTest");
+            if (returnWork == 0) {
+                for (int count=0; count < 25; count++) printf ("User[%d]: %s\n", count, player1.playerUsername[count]);
             }
             printf ("Username Position is: player1.playerUsername[%d]\n", usernameCheck);
             // usernameCheck is the value used for pulling other values out of struct
@@ -208,8 +215,8 @@ DWORD WINAPI clientHandler( void *sd ) {
                 end=time(NULL);
                 timeSince=end - start;
                 if ( timeSince >= 7200 ) {
-                    timesMined=timesMined + 1;
-                    wallet=workMining( timesMined, wallet );
+                    player1.timesMined[usernameCheck]=player1.timesMined[usernameCheck] + 1;
+                    player1.wallet[usernameCheck]=workMining( player1.timesMined[usernameCheck], player1.wallet[usernameCheck] );
                     start=time(NULL);
                 }
                 else {
@@ -222,8 +229,8 @@ DWORD WINAPI clientHandler( void *sd ) {
                 end=time(NULL);
                 timeSince=end - start;
                 if ( timeSince >= 14400 ) {
-                    timesSmithed=timesSmithed + 1;
-                    wallet=workSmithing( timesSmithed, wallet );
+                    player1.timesSmithed[usernameCheck]=player1.timesSmithed[usernameCheck] + 1;
+                    player1.wallet[usernameCheck]=workSmithing( player1.timesSmithed[usernameCheck], player1.wallet[usernameCheck] );
                     start=time(NULL);
                 }
                 else {
@@ -236,8 +243,8 @@ DWORD WINAPI clientHandler( void *sd ) {
                 end=time(NULL);
                 timeSince=end - start;
                 if ( timeSince >= 10800 ) {
-                    timesTaught=timesTaught + 1;
-                    wallet=workTeaching( timesTaught, wallet );
+                    player1.timesTaught[usernameCheck]=player1.timesTaught[usernameCheck] + 1;
+                    player1.wallet[usernameCheck]=workTeaching( player1.timesTaught[usernameCheck], player1.wallet[usernameCheck] );
                     start=time(NULL);
                 }
                 else {
@@ -249,7 +256,7 @@ DWORD WINAPI clientHandler( void *sd ) {
             // start of wallet
             returnWork=strcmp(outputTest, "$wallet");
             if (returnWork == 0) {
-                printf ("You currently have %d dollars in your wallet.\n", wallet);
+                printf ("You currently have %d dollars in your wallet.\n", player1.wallet[usernameCheck]);
             }
             // end of wallet 
             // start of bank
@@ -259,19 +266,19 @@ DWORD WINAPI clientHandler( void *sd ) {
             }
             returnWork=strcmp(outputTest, "$1");
             if (returnWork == 0) {
-                printf ("How much would you like to deposit?\n The maximum amount you can deposit is: %d\n", wallet);
+                printf ("How much would you like to deposit?\n The maximum amount you can deposit is: %d\n", player1.wallet[usernameCheck]);
                 depositPrevious=1;
             }
             if (depositPrevious == 1) {
                 invalidDeposit=atoi(outputTest);
                 returnWork=strcmp(outputTest, "$1");
-                if (invalidDeposit > wallet) {
+                if (invalidDeposit > player1.wallet[usernameCheck]) {
                     printf ("You cannot deposit more money than you have.\n");
                 }
                 else if (returnWork != 0) {
-                    bankMoney=invalidDeposit+bankMoney;
-                    wallet=wallet - invalidDeposit;
-                    printf ("You currently have %d dollars in the bank.\n", bankMoney);
+                    player1.bankMoney[usernameCheck]=invalidDeposit+player1.bankMoney[usernameCheck];
+                    player1.wallet[usernameCheck]=player1.wallet[usernameCheck] - invalidDeposit;
+                    printf ("You currently have %d dollars in the bank.\n", player1.bankMoney[usernameCheck]);
                     depositPrevious=0;
                 }
             }
@@ -281,26 +288,26 @@ DWORD WINAPI clientHandler( void *sd ) {
                     printf ("You have no money in the bank.");
                 }
                 else {
-                    printf ("How much would you like to withdraw?\nThe most you can withdraw is: %d\n", bankMoney);
+                    printf ("How much would you like to withdraw?\nThe most you can withdraw is: %d\n", player1.bankMoney[usernameCheck]);
                     withdrawPrevious=1;
                 }
             }
             if (withdrawPrevious == 1) {
                 withdrawMoney=atoi(outputTest);
                 returnWork=strcmp(outputTest, "$2");
-                if (bankMoney < withdrawMoney) {
+                if (player1.bankMoney[usernameCheck] < withdrawMoney) {
                     printf ("You cannot withdraw more than you have in the bank.\n");
                 }
                 else if (returnWork != 0) {
-                    bankMoney=bankMoney - withdrawMoney;
-                    wallet=wallet + withdrawMoney;
-                    printf ("You now have %d in the bank.\n", bankMoney);
+                    player1.bankMoney[usernameCheck]=player1.bankMoney[usernameCheck] - withdrawMoney;
+                    player1.wallet[usernameCheck]=player1.wallet[usernameCheck] + withdrawMoney;
+                    printf ("You now have %d in the bank.\n", player1.bankMoney[usernameCheck]);
                     withdrawPrevious=0;
                 }
             }
             returnWork=strcmp(outputTest, "$3");
             if (returnWork == 0) {
-                printf ("Your balance is: %d\n", bankMoney);
+                printf ("Your balance is: %d\n", player1.bankMoney[usernameCheck]);
             }
             // end of bank
             // end of new code
