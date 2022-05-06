@@ -12,8 +12,11 @@ int main( void ) {
     char username[24];
     char recvbuf[ 512 ];
     int recvbuflen = 512;
+    char serverBuf[512];
+    int serverBufLen = 512;
     char *input= (char *)malloc(512);
     int result;
+    int listenServer;
     int bankSelector;
     int alternate=0;
     int* bankAmount=0;
@@ -38,6 +41,7 @@ int main( void ) {
         hintsAddrInfo.ai_family = AF_UNSPEC;
         hintsAddrInfo.ai_socktype = SOCK_STREAM;
         hintsAddrInfo.ai_protocol = IPPROTO_TCP;
+        hintsAddrInfo.ai_flags = AI_PASSIVE;
         result = getaddrinfo( "localhost", "12345", &hintsAddrInfo, &hostAddrInfo );
     if ( result != 0 ) {
         printf( "getaddrinfo failed with error: %d\n", result );
@@ -103,6 +107,7 @@ int main( void ) {
         if (bankSelector == 0) {
             fscanf (stdout, "%d", bankAmount);
         }
+
     if( preview < 1000 && ret!=0) {fwrite(recvbuf, 1, result, stdout); preview += result; } 
             printf("\n\nThis Was From The Server\n\n");
         } 
