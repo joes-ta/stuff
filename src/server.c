@@ -17,7 +17,7 @@ struct player {
     int timesMined[30];
 } player1;
 
-int workMining ( char recvbuf[512], int timesMined, int currentMoney ) {
+int workMining ( int timesMined, int currentMoney ) {
     int miningExperience=timesMined * .25;
     int money;
     timesMined=timesMined+1;
@@ -28,12 +28,14 @@ int workMining ( char recvbuf[512], int timesMined, int currentMoney ) {
     else if ( miningExperience >= 25 ) {
         money=rand() % moneyExperienceModifier + 101;
     }
-    sprintf ( recvbuf, "Experience Gained: %d xp\nMoney Earned: %d dollars\nMining Level: %d\n", 25, money, miningExperience);
+    printf ("Experience Gained: %d xp\n", 25);
+    printf ("Money Earned: %d dollars\n", money);
+    printf ("Mining Level: %d\n", miningExperience);
     int wallet=currentMoney + money;
     return wallet;
 }
 
-int workSmithing ( char recvbuf[512], int timesSmithed, int currentMoney ) {
+int workSmithing ( int timesSmithed, int currentMoney ) {
     int smithingExperience=timesSmithed * .25;
     int money;
     int smithingExperienceModifier=timesSmithed * 12;
@@ -43,12 +45,14 @@ int workSmithing ( char recvbuf[512], int timesSmithed, int currentMoney ) {
     else if ( smithingExperience >= 25 ) {
         money=rand() % smithingExperienceModifier + 201;
     }
-    sprintf ( recvbuf, "Experience Gained: %d xp\nMoney Earned: %d dollars\nSmithing Level: %d\n", 25, money, smithingExperience);
+    printf ("Experience Gained: %d xp\n", 25);
+    printf ("Money Earned: %d dollars\n", money);
+    printf ("Smithing Level: %d\n", smithingExperience);
     int wallet=currentMoney + money;
     return wallet;
 }
 
-int workTeaching ( char recvbuf[512], int timesTaught, int currentMoney ) {
+int workTeaching ( int timesTaught, int currentMoney ) {
     int teachingExperience=timesTaught * .25;
     int money;
     int teachingExperienceModifier=timesTaught * 11;
@@ -58,7 +62,9 @@ int workTeaching ( char recvbuf[512], int timesTaught, int currentMoney ) {
     else if ( teachingExperience >= 25 ) {
         money=rand() % teachingExperienceModifier + 151;
     }
-    sprintf ( recvbuf, "Experience Gained: %d xp\nMoney Earned: %d dollars\nTeaching Level: %d\n", 25, money, teachingExperience);
+    printf ("Experience Gained: %d xp\n", 25);
+    printf ("Money Earned: %d dollars\n", money);
+    printf ("Teaching Level: %d\n", teachingExperience);
     int wallet=currentMoney + money;
     return wallet;
 }
@@ -140,7 +146,7 @@ DWORD WINAPI clientHandler( void *sd ) {
 	SOCKET clientSocket = (SOCKET)sd;
     int iSendResult;
     char recvbuf[512];
-    int recvbuflen=100;
+    int recvbuflen=124;
 	int result = 0;
     char* clientInput;
     int returnWork;
@@ -203,7 +209,7 @@ DWORD WINAPI clientHandler( void *sd ) {
             outputTest=recvbuf;
             workNotSpecified=strcmp(outputTest, "$work");
             if (workNotSpecified == 0) {
-                sprintf (recvbuf, "Pick from one of the following:\n $work.Mining\n $work.Teaching\n $work.Smithing\n");
+                printf ("Pick from one of the following:\n $work.Mining\n $work.Teaching\n $work.Smithing\n");
             }
             returnWork=strcmp(outputTest, "$work.Mining");
             if (returnWork == 0) {
@@ -211,12 +217,12 @@ DWORD WINAPI clientHandler( void *sd ) {
                 timeSince=end - start;
                 if ( timeSince >= 7200 ) {
                     player1.timesMined[emptyCheck]=player1.timesMined[emptyCheck] + 1;
-                    player1.wallet[emptyCheck]=workMining( recvbuf, player1.timesMined[emptyCheck], player1.wallet[emptyCheck] );
+                    player1.wallet[emptyCheck]=workMining( player1.timesMined[emptyCheck], player1.wallet[emptyCheck] );
                     start=time(NULL);
                 }
                 else {
                     timeSince=7200 - timeSince;
-                    sprintf (recvbuf, "You are still tired, you can't mine for: %d seconds\n", timeSince );
+                    printf ( "You are still tired, you can't mine for: %d seconds\n", timeSince );
                 }
             }
             returnWork=strcmp(outputTest, "$work.Smithing");
@@ -225,12 +231,12 @@ DWORD WINAPI clientHandler( void *sd ) {
                 timeSince=end - start;
                 if ( timeSince >= 14400 ) {
                     player1.timesSmithed[emptyCheck]=player1.timesSmithed[emptyCheck] + 1;
-                    player1.wallet[emptyCheck]=workSmithing( recvbuf, player1.timesSmithed[emptyCheck], player1.wallet[emptyCheck] );
+                    player1.wallet[emptyCheck]=workSmithing( player1.timesSmithed[emptyCheck], player1.wallet[emptyCheck] );
                     start=time(NULL);
                 }
                 else {
                     timeSince=14400 - timeSince;
-                    sprintf (recvbuf, "You are still tired, you can't start smithing again for: %d seconds\n", timeSince );
+                    printf ("You are still tired, you can't start smithing again for: %d seconds\n", timeSince );
                 }
             }
             returnWork=strcmp(outputTest, "$work.Teaching");
@@ -239,12 +245,12 @@ DWORD WINAPI clientHandler( void *sd ) {
                 timeSince=end - start;
                 if ( timeSince >= 10800 ) {
                     player1.timesTaught[emptyCheck]=player1.timesTaught[emptyCheck] + 1;
-                    player1.wallet[emptyCheck]=workTeaching( recvbuf,player1.timesTaught[emptyCheck], player1.wallet[emptyCheck] );
+                    player1.wallet[emptyCheck]=workTeaching( player1.timesTaught[emptyCheck], player1.wallet[emptyCheck] );
                     start=time(NULL);
                 }
                 else {
                     timeSince=10800 - timeSince;
-                    sprintf (recvbuf, "You are still tired, you can't start teaching again for: %d seconds\n", timeSince );
+                    printf ("You are still tired, you can't start teaching again for: %d seconds\n", timeSince );
                 }
             }
             // end of work
@@ -257,33 +263,33 @@ DWORD WINAPI clientHandler( void *sd ) {
             // start of bank
             returnWork=strcmp(outputTest, "$bank");
             if (returnWork == 0) {
-                sprintf (recvbuf, "The teller asks if you would like to:\n   1) Deposit Money\n   2) Withdraw Money\n   3) Check Your Balance\nPlease enter $1, $2, or $3.\n");
+                printf ("The teller asks if you would like to:\n   1) Deposit Money\n   2) Withdraw Money\n   3) Check Your Balance\nPlease enter $1, $2, or $3.\n");
             }
             returnWork=strcmp(outputTest, "$1");
             if (returnWork == 0) {
-                sprintf (recvbuf, "How much would you like to deposit?\n The maximum amount you can deposit is: %d\n", player1.wallet[emptyCheck]);
+                printf ("How much would you like to deposit?\n The maximum amount you can deposit is: %d\n", player1.wallet[emptyCheck]);
                 depositPrevious=1;
             }
             if (depositPrevious == 1) {
                 invalidDeposit=atoi(outputTest);
                 returnWork=strcmp(outputTest, "$1");
                 if (invalidDeposit > player1.wallet[emptyCheck]) {
-                    sprintf (recvbuf, "You cannot deposit more money than you have.\n");
+                    printf ("You cannot deposit more money than you have.\n");
                 }
                 else if (returnWork != 0) {
                     player1.bankMoney[emptyCheck]=invalidDeposit+player1.bankMoney[emptyCheck];
                     player1.wallet[emptyCheck]=player1.wallet[emptyCheck] - invalidDeposit;
-                    sprintf (recvbuf, "You currently have %d dollars in the bank.\n", player1.bankMoney[emptyCheck]);
+                    printf ("You currently have %d dollars in the bank.\n", player1.bankMoney[emptyCheck]);
                     depositPrevious=0;
                 }
             }
             returnWork=strcmp(outputTest, "$2");
             if (returnWork == 0) {
                 if (bankMoney == 0) {
-                    sprintf (recvbuf, "You have no money in the bank.");
+                    printf ("You have no money in the bank.");
                 }
                 else {
-                    sprintf (recvbuf, "How much would you like to withdraw?\nThe most you can withdraw is: %d\n", player1.bankMoney[emptyCheck]);
+                    printf ("How much would you like to withdraw?\nThe most you can withdraw is: %d\n", player1.bankMoney[emptyCheck]);
                     withdrawPrevious=1;
                 }
             }
@@ -291,23 +297,22 @@ DWORD WINAPI clientHandler( void *sd ) {
                 withdrawMoney=atoi(outputTest);
                 returnWork=strcmp(outputTest, "$2");
                 if (player1.bankMoney[emptyCheck] < withdrawMoney) {
-                    sprintf (recvbuf, "You cannot withdraw more than you have in the bank.\n");
+                    printf ("You cannot withdraw more than you have in the bank.\n");
                 }
                 else if (returnWork != 0) {
                     player1.bankMoney[emptyCheck]=player1.bankMoney[emptyCheck] - withdrawMoney;
                     player1.wallet[emptyCheck]=player1.wallet[emptyCheck] + withdrawMoney;
-                    sprintf (recvbuf, "You now have %d in the bank.\n", player1.bankMoney[emptyCheck]);
+                    printf ("You now have %d in the bank.\n", player1.bankMoney[emptyCheck]);
                     withdrawPrevious=0;
                 }
             }
             returnWork=strcmp(outputTest, "$3");
             if (returnWork == 0) {
-                sprintf (recvbuf, "Your balance is: %d\n", player1.bankMoney[emptyCheck]);
+                printf ("Your balance is: %d\n", player1.bankMoney[emptyCheck]);
             }
             // end of bank
             // end of new code
             iSendResult = send( clientSocket, recvbuf, recvbuflen, 0 );
-            strncpy(recvbuf, "", 512);
             if( iSendResult == SOCKET_ERROR ) {
                 printf( "send failed with error: %d\n", WSAGetLastError( ) );
                 closesocket( clientSocket );
