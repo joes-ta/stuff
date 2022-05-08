@@ -1,3 +1,5 @@
++create a help option that users can use to get information about the game
+->leave openings for expansion
 ->Being able to save user data and accessing that data
 +Afk time out for players after a given period of time
 ->Stable Form Of Sending Client Altered Data
