@@ -1,0 +1,17 @@
+->Being able to save user data and accessing that data
++Afk time out for players after a given period of time
+->Stable Form Of Sending Client Altered Data
+->storing of Usernames
++checking for username
+->building username array
++checking username array
+->Chat Mechanic/Broadcasting to other users
++Timeout for spam
+->Game Mechanics
++Active Users Display, so other players know who is active
++Timeout for work
++Random Events/Items
++experience points given after completion of certain events? 
+->possibly stats that would aid the player in some fashion
++More Commands or tools that would add to the experience so there is more to do
++Server Runs In the Background/Fullyactive server?
