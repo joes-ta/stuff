@@ -45,7 +45,7 @@ void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwr
     sprintf(recvbuf,"%s%d",strltrl,local);
     *recvbuflen=(int)strlen(recvbuf);
     }    
-    if( returnwrk == 0)
+        if( returnwrk == 0) //Work
     {
         int earnxp=rand()%1000;
         srand(time(NULL));
@@ -56,14 +56,17 @@ void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwr
         *wallet+=money;
         *xp+=earnxp;
         *rep+=earnrep;
-        char *strltrlcash="You Got: $";
-    sprintf(recvbuf,"%s%d",strltrlcash,money);
-        printf("You got:$%d\n",money);
-      //  char *strltrlxp="You Earned:+ ";
-    // sprintf(recvbuf,"%s%d",strltrlcash,money);
+    //    char *strltrlcash="You Got: $%d",money;
+    //    char *strltrlexp="\nYou Earned: %d xp",earnxp;
+    //    char *strltrlrespect="\nYou Earned: =%d rep",earnrep;
+    //    sprintf(recvbuf,"%s/n%s/n%s",strltrlcash,strltrlexp,strltrlrespect);
+    char *strltrlcash="You Got: $";
+    char *strltrlexp="You Got: ";
+    char *strltrlrespect="You Got: +";
+    sprintf(recvbuf,"\n%s%d\n%s%d XP\n%s%d Reputation",strltrlcash,money,strltrlexp,earnxp,strltrlrespect,earnrep);
     *recvbuflen=(int)strlen(recvbuf);
-    }
-        if( returndtwrk == 0)
+    }  
+        if( returndtwrk == 0) //Dirty Work
     {
         int earnxp=rand()%1000;
         srand(time(NULL));
@@ -74,11 +77,14 @@ void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwr
         *wallet+=money;
         *xp+=earnxp;
         *rep-=earnrep;
-        char *strltrlcash="You Got: $";
-    sprintf(recvbuf,"%s%d",strltrlcash,money);
-        printf("You got:$%d\n",money);
-      //  char *strltrlxp="You Earned:+ ";
-    // sprintf(recvbuf,"%s%d",strltrlcash,money);
+    //   char *strltrlcash="You Got: $%d",money;
+    //   char *strltrlexp="\nYou Earned: %d xp",earnxp;
+    //   char *strltrlrespect="\nYou Earned: -%d rep",earnrep;
+    //   sprintf(recvbuf,"%s/n%s/n%s",strltrlcash,strltrlexp,strltrlrespect);
+    char *strltrlcash="You Got: $";
+    char *strltrlexp="You Got: ";
+    char *strltrlrespect="You Got: -";
+    sprintf(recvbuf,"\n%s%d\n%s%d XP\n%s%d Reputation",strltrlcash,money,strltrlexp,earnxp,strltrlrespect,earnrep);
     *recvbuflen=(int)strlen(recvbuf);
     }      
     if( returnbnk == 0)
