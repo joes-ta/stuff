@@ -23,7 +23,7 @@ struct player
 };
 //Game Mechanics Happen Here
 //Alternated Buffer. *Note:Will send back empty recvbuf for undeveloped mechanics
-void action(int returninv, int returnhea, int returnwal, int returnbnk, int returnwrk, int returndtwrk, int returnbounty, int returnhospital, int returnpolicestation,
+void action(int returninv, int returnhea, int returnwal, int returnbnk, int returnwrk, int returndtwrk, int returnbounty, int returnhospital, int returnpolicestation, int returnhelppeople,
     char* recvbuf, int* recvbuflen, char** inventory, int* health, int* wallet, long int* bank, long long int* xp, long int* rep) {
     char str[512];
     memset(str, 0, 512);
@@ -147,6 +147,30 @@ void action(int returninv, int returnhea, int returnwal, int returnbnk, int retu
         char* strltrlcash = "You lost: $";
         char* strltrlrespect = "You gained: +";
         sprintf(recvbuf, "\n%s%d\n%s%d Reputation", strltrlcash, money, strltrlrespect, earnrep);
+        *recvbuflen = (int)strlen(recvbuf);
+    }
+    if (returnhelppeople == 0) //option for bounty
+    {
+        int earnxp = rand() % 100;
+        srand(time(NULL));
+        int money = rand() % 100;
+        srand(time(NULL));
+        int earnrep = rand() % 1000;
+        srand(time(NULL));
+        //possibly add a item gathering feature to make this different from work
+        //more help community based though, given it gives more rep
+        *wallet += money;
+        *xp += earnxp;
+        *rep -= earnrep;
+       
+        //   char *strltrlcash="You Got: $%d",money;
+        //   char *strltrlexp="\nYou Earned: %d xp",earnxp;
+        //   char *strltrlrespect="\nYou Earned: -%d rep",earnrep;
+        //   sprintf(recvbuf,"%s/n%s/n%s",strltrlcash,strltrlexp,strltrlrespect);
+        char* strltrlcash = "You Got: $";
+        char* strltrlexp = "You Got: ";
+        char* strltrlrespect = "You Got: +";
+        sprintf(recvbuf, "\n%s%d\n%s%d XP\n%s%d Reputation", strltrlcash, money, strltrlexp, earnxp, strltrlrespect, earnrep);
         *recvbuflen = (int)strlen(recvbuf);
     }
     if (returnbnk == 0)
@@ -376,6 +400,7 @@ DWORD WINAPI clientHandler(struct player* player) {
             int returnbounty;
             int returnhospital;
             int returnpolicestation;
+            int returnhelppeople;
             int quitret;
             int recvbuflen = (int)strlen(recvbuf);
             message = (char*)malloc(512);
@@ -404,7 +429,8 @@ DWORD WINAPI clientHandler(struct player* player) {
                 returnbounty = strcmpi(message, "$bounty");
                 returnhospital= strcmpi(message, "$hospital");
                 returnpolicestation = strcmpi(message, "$police");
-                action(returninv, returnhea, returnwal, returnbnk, returnwrk, returndtwrk, returnbounty, returnhospital, returnpolicestation, recvbuf, &recvbuflen,
+                returnhelppeople = strcmpi(message, "$help");
+                action(returninv, returnhea, returnwal, returnbnk, returnwrk, returndtwrk, returnbounty, returnhospital, returnpolicestation, returnhelppeople, recvbuf, &recvbuflen,
                     &player->inventory[id], &player->health[id], &player->wallet[id], &player->bank[id], &player->xp[id], &player->rep[id]);
                 break;
             case 'q':
