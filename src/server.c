@@ -17,12 +17,14 @@ struct player
       int health[30];
        int wallet[30];
         long int bank[30];
+        long long int xp[30];
+        long int rep[30];
          SOCKET ClientSocket[30];
 };
 //Game Mechanics Happen Here
 //Alternated Buffer. *Note:Will send back empty recvbuf for undeveloped mechanics
-void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwrk,
-                char *recvbuf,int *recvbuflen,char **inventory,int *health,int *wallet, long int *bank){
+void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwrk,int returndtwrk,
+                char *recvbuf,int *recvbuflen,char **inventory,int *health,int *wallet, long int *bank, long long int *xp, long int *rep){
     char str[512];
     memset(str,0,512);
     memset(recvbuf,0,512);
@@ -45,22 +47,48 @@ void action(int returninv,int returnhea,int returnwal,int returnbnk,int returnwr
     }    
     if( returnwrk == 0)
     {
+        int earnxp=rand()%1000;
+        srand(time(NULL));
         int money=rand()%100;
         srand(time(NULL));
+        int earnrep=rand()%100;
+        srand(time(NULL));
         *wallet+=money;
+        *xp+=earnxp;
+        *rep+=earnrep;
+        char *strltrlcash="You Got: $";
+    sprintf(recvbuf,"%s%d",strltrlcash,money);
         printf("You got:$%d\n",money);
-        char *strltrl="You Got: $";
-    sprintf(recvbuf,"%s%d",strltrl,money);
+      //  char *strltrlxp="You Earned:+ ";
+    // sprintf(recvbuf,"%s%d",strltrlcash,money);
     *recvbuflen=(int)strlen(recvbuf);
-    }    
+    }
+        if( returndtwrk == 0)
+    {
+        int earnxp=rand()%1000;
+        srand(time(NULL));
+        int money=rand()%100;
+        srand(time(NULL));
+        int earnrep=rand()%100;
+        srand(time(NULL));
+        *wallet+=money;
+        *xp+=earnxp;
+        *rep-=earnrep;
+        char *strltrlcash="You Got: $";
+    sprintf(recvbuf,"%s%d",strltrlcash,money);
+        printf("You got:$%d\n",money);
+      //  char *strltrlxp="You Earned:+ ";
+    // sprintf(recvbuf,"%s%d",strltrlcash,money);
+    *recvbuflen=(int)strlen(recvbuf);
+    }      
     if( returnbnk == 0)
     {
         //arguments needed
     }              
 };
 
-void see(int returninv,int returnhea,int returnwal, int returnbnk,int returnid,
-        char *recvbuf,int *recvbuflen, char *inventory, int health,int wallet, long int bank,unsigned char playerid){
+void see(int returninv,int returnhea,int returnwal, int returnbnk,int returnid, int returnxp, int returnrep,
+        char *recvbuf,int *recvbuflen, char *inventory, int health,int wallet, long int bank, long long int xp, long int rep, unsigned char playerid){
     char str[512];
      memset(str,0,512);
      memset(recvbuf,0,512);
@@ -109,6 +137,24 @@ void see(int returninv,int returnhea,int returnwal, int returnbnk,int returnid,
   printf("recvbuf:%s\n",recvbuf);
             printf("Sizeof:%d\n",*recvbuflen);
     }
+    if( returnxp == 0) //Checking Player XP
+    {
+    char *strltrl=" xp";
+     sprintf(recvbuf,"%lld%s",xp,strltrl);
+       *recvbuflen=(int)strlen(recvbuf);
+       printf("Your xp:%s\n",str);
+      printf("recvbuf:%s\n",recvbuf);
+     printf("Sizeof:%d\n",*recvbuflen);    
+  }
+      if( returnrep == 0) //Checking Player Reputation
+    {
+    char *strltrl=" Reputation";
+     sprintf(recvbuf,"%d%s",rep,strltrl);
+       *recvbuflen=(int)strlen(recvbuf);
+       printf("Your Reputation:%s\n",str);
+      printf("recvbuf:%s\n",recvbuf);
+     printf("Sizeof:%d\n",*recvbuflen);    
+  }
 };//End Of Game Mechanics
 
 //Listening and Accepting Of Clients Happens Here
@@ -138,7 +184,7 @@ int main(void) {
         hintsAddrInfo.ai_protocol = IPPROTO_TCP;
         hintsAddrInfo.ai_flags = AI_PASSIVE;
 
-        result = getaddrinfo( "209.23.10.125", "12345", &hintsAddrInfo, &hostAddrInfo );
+        result = getaddrinfo( "localhost", "12345", &hintsAddrInfo, &hostAddrInfo );
     
             if ( result != 0 ) {
                     printf( "getaddrinfo failed with error: %d\n", result );
@@ -181,7 +227,7 @@ int main(void) {
     SOCKADDR_IN sinRemote;
     int nAddrSize =sizeof(sinRemote);
     DWORD threadID;
-    memset(player->ClientSocket,0,30);
+    memset(player,0,sizeof(struct player));
         while(1){
             ClientSocket = accept( ListenSocket, (SOCKADDR *)&sinRemote,&nAddrSize);
         
@@ -227,7 +273,9 @@ int main(void) {
             player->wallet[id];//Create Player Wallet
             player->bank[id]; //Create Player Bank
             player->health[id]; //Create Player Health
-            player->inventory[id]; //Create Player Inventory;
+            player->inventory[id]; //Create Player Inventory
+            player->xp[id]; //Create Player XP
+            player->rep[id]; //Create Player Reputation
             break;
         }
         i++;
@@ -252,6 +300,9 @@ int main(void) {
            int returnwal;
           int returnwrk;
          int returnbnk;
+        int returnxp;
+        int returnrep;
+        int returndtwrk;
         int quitret;
          int recvbuflen=(int)strlen(recvbuf);    
             message=(char *)malloc(512);
@@ -266,16 +317,19 @@ int main(void) {
                 returnwal=strcmpi(message, "?wallet");
                 returnbnk=strcmpi(message, "?bank");
                 returnid=strcmpi(message,  "?me");
-            see(returninv,returnhea,returnwal,returnbnk,returnid,recvbuf,&recvbuflen,
-                player->inventory[id],player->health[id],player->wallet[id],player->bank[id],player->playerid[id]);
+                returnxp=strcmpi(message, "?xp");
+                returnrep=strcmpi(message, "?rep");
+            see(returninv,returnhea,returnwal,returnbnk,returnid,returnxp,returnrep,recvbuf,&recvbuflen,
+                player->inventory[id],player->health[id],player->wallet[id],player->bank[id],player->xp[id],player->rep[id],player->playerid[id]);
                 break;
                 case '$':
                 returninv=strcmpi(message, "$inventory");
                 returnwrk=strcmpi(message, "$work");
                 returnwal=strcmpi(message, "$wallet");
                 returnbnk=strcmpi(message, "$bank");
-            action(returninv,returnhea,returnwal,returnbnk,returnwrk,recvbuf,&recvbuflen,
-                &player->inventory[id],&player->health[id],&player->wallet[id],&player->bank[id]);
+                returndtwrk=strcmpi(message, "$dirtywork");
+            action(returninv,returnhea,returnwal,returnbnk,returnwrk,returndtwrk,recvbuf,&recvbuflen,
+                &player->inventory[id],&player->health[id],&player->wallet[id],&player->bank[id],&player->xp[id],&player->rep[id]);
                 break;
                 case 'q':
                 closesocket(player->ClientSocket[id]);

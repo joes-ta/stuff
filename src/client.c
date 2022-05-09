@@ -28,7 +28,7 @@ int main( void ) {
         hintsAddrInfo.ai_socktype = SOCK_STREAM;
         hintsAddrInfo.ai_protocol = IPPROTO_TCP;
 
-        result = getaddrinfo( "209.23.10.125", "12345", &hintsAddrInfo, &hostAddrInfo );//Attempt to contact "localhost" at port 12345//List of address structures
+        result = getaddrinfo( "localhost", "12345", &hintsAddrInfo, &hostAddrInfo );//Attempt to contact "localhost" at port 12345//List of address structures
             
     if ( result != 0 ) {
         printf( "getaddrinfo failed with error: %d\n", result );
