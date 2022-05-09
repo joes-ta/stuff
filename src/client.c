@@ -13,6 +13,7 @@ int main(void) {
     int recvbuflen = 512;
     char* input = (char*)malloc(512);
     int result;
+    printf("Welcome to the Joe World!\nConnecting to Server... Please Wait\n");
     char* quit = "quit";
     int ret;
 
