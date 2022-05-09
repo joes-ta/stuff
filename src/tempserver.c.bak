@@ -12,6 +12,7 @@ DWORD WINAPI clientHandler(void* player);
 
 struct player
 {
+    printf("hello");
     unsigned char playerid[30];
     char* inventory[30];
     int health[30];
@@ -26,6 +27,7 @@ void action(int returninv, int returnhea, int returnwal, int returnbnk, int retu
     char str[512];
     memset(str, 0, 512);
     memset(recvbuf, 0, 512);
+  
     if (returninv == 0) //Actions for inventory
     {
         //arguments needed
@@ -59,22 +61,13 @@ void action(int returninv, int returnhea, int returnwal, int returnbnk, int retu
     }
 };
 
-void see(int returnhelp, int returninv, int returnhea, int returnwal, int returnbnk, int returnid,
+void see(int returninv, int returnhelp, int returnhea, int returnwal, int returnbnk, int returnid,
     char* recvbuf, int* recvbuflen, char* inventory, int health, int wallet, long int bank, unsigned char playerid) {
     char str[512];
     memset(str, 0, 512);
     memset(recvbuf, 0, 512);
-    if (returnid == 0) //Checking Who I Am
-    {
-        printf("Your ID:%d\n", playerid); //replace with csock id?
-        char* strltrl = "ID:";
-        sprintf(recvbuf, "%s%d", strltrl, playerid); //Creates Text "ID:(ID#)"//Prints to recvbuf
-        *recvbuflen = (int)strlen(recvbuf);
-        printf("recvbuf:%s\n", recvbuf);
-        printf("Sizeof:%d\n", *recvbuflen);
-
-    }
-    if (returnhelp == 0) //help option
+    
+    if (returnhelp == 0) //help tool 
     {
         printf("Hello, Welcome to Joe Land! \n");
         printf("You may not know what is going on at all and thats okay.\n");
@@ -87,6 +80,15 @@ void see(int returnhelp, int returninv, int returnhea, int returnwal, int return
         printf("($ - ?)Bank: Offers information about the most secure form of storage.\n");
         printf("($ - ?)Health: Offers information regarding player health.\n");
         printf("($ - ?)Me: Offers information regarding your player.\n");
+    }
+    if (returnid == 0) //Checking Who I Am
+    {
+        printf("Your ID:%d\n", playerid); //replace with csock id?
+        char* strltrl = "ID:";
+        sprintf(recvbuf, "%s%d", strltrl, playerid); //Creates Text "ID:(ID#)"//Prints to recvbuf
+        *recvbuflen = (int)strlen(recvbuf);
+        printf("recvbuf:%s\n", recvbuf);
+        printf("Sizeof:%d\n", *recvbuflen);
 
     }
     if (returninv == 0) //Checking Player Inventory
@@ -284,7 +286,7 @@ DWORD WINAPI clientHandler(struct player* player) {
                 returnwal = strcmpi(message, "?wallet");
                 returnbnk = strcmpi(message, "?bank");
                 returnid = strcmpi(message, "?me");
-                see(returnhelp, returninv, returnhea, returnwal, returnbnk, returnid, recvbuf, &recvbuflen,
+                see(returninv, returnhelp, returnhea, returnwal, returnbnk, returnid, recvbuf, &recvbuflen,
                     player->inventory[id], player->health[id], player->wallet[id], player->bank[id], player->playerid[id]);
                 break;
             case '$':
