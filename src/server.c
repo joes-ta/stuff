@@ -167,6 +167,7 @@ void see(int returninv,int returnhea,int returnwal, int returnbnk,int returnid, 
 //Assigning of Client Sockets Happens Here
 //Preparations For Client ID happens here;
 int main(void) {
+    printf ("Welcome to the GTA6: Joe's Classroom Server. Please be Responsible.\n");
     WSADATA wsaData;
     struct addrinfo *hostAddrInfo = NULL, hintsAddrInfo;
     SOCKET ListenSocket = INVALID_SOCKET;

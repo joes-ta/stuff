@@ -13,6 +13,7 @@ int main( void ) {
     int recvbuflen = 512;
     char *input= (char *)malloc(512);
     int result;
+    printf ("Welcome to the GTA6: Joe's Classroom!\nConnecting to Server... Please Wait\n");
     char *quit="quit";
     int ret;    
         
@@ -64,7 +65,11 @@ int main( void ) {
             WSACleanup( );
         return -4;
     }
+    if (ret!=0) {
+        printf( "Connection to Server Successful!\n");
+    }
     do{
+            printf ("What would you like to do? Need help? Type in $help\n");
             memset(input,0,512); //allocate 512 bit for input and store them as 0's
             scanf("%511[^\n]",input); //scan through 511 bits for *c / message; looking for anything that is [^\n](Not a newline)  
             scanf("%*c");//temporary place holder of current character.
