@@ -1,4 +1,3 @@
-See linsock branch and winsock branch for corresponding socket implementations.
 // https://docs.microsoft.com/en-us/windows/win32/winsock/winsock-client-application
 
 #include <ws2tcpip.h>
@@ -14,7 +13,7 @@ int main( void ) {
     int recvbuflen = 512;
     char *input= (char *)malloc(512);
     int result;
-    char *quit="quit";
+    char *quit="$quit";
     int ret;    
         
         result = WSAStartup( MAKEWORD( 2,2 ), &wsaData );
@@ -29,7 +28,7 @@ int main( void ) {
         hintsAddrInfo.ai_socktype = SOCK_STREAM;
         hintsAddrInfo.ai_protocol = IPPROTO_TCP;
 
-        result = getaddrinfo( "209.23.10.125", "12345", &hintsAddrInfo, &hostAddrInfo );//Attempt to contact "localhost" at port 12345//List of address structures
+        result = getaddrinfo( "localhost", "12345", &hintsAddrInfo, &hostAddrInfo );//Attempt to contact "localhost" at port 12345//List of address structures
             
     if ( result != 0 ) {
         printf( "getaddrinfo failed with error: %d\n", result );
