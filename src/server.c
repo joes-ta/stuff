@@ -59,7 +59,7 @@ void action(int returninv, int returnhea, int returnwal, int returnbnk, int retu
     }
 };
 
-void see(int returnhelp, int returninv, int returnhea, int returnwal, int returnbnk, int returnid,
+void see(int returnhelp, int returninv, int returnhea, int returnwal, int returnbnk, int returnquit, int returnid,
     char* recvbuf, int* recvbuflen, char* inventory, int health, int wallet, long int bank, unsigned char playerid) {
     char str[512];
     memset(str, 0, 512);
@@ -124,12 +124,18 @@ void see(int returnhelp, int returninv, int returnhea, int returnwal, int return
         printf("recvbuf:%s\n", recvbuf);
         printf("Sizeof:%d\n", *recvbuflen);
     }
+    if (returnquit == 0) //quit option 
+    {
+        printf("Trying to implement quit option.\n");
+        
+    }
 };//End Of Game Mechanics
 
 //Listening and Accepting Of Clients Happens Here
 //Assigning of Client Sockets Happens Here
 //Preparations For Client ID happens here;
 int main(void) {
+    printf("Try the ?help option if you are stuck.\n");
     WSADATA wsaData;
     struct addrinfo* hostAddrInfo = NULL, hintsAddrInfo;
     SOCKET ListenSocket = INVALID_SOCKET;
@@ -269,6 +275,7 @@ DWORD WINAPI clientHandler(struct player* player) {
             int returnwal;
             int returnwrk;
             int returnbnk;
+            int returnquit;
             int quitret;
             int recvbuflen = (int)strlen(recvbuf);
             message = (char*)malloc(512);
@@ -283,8 +290,9 @@ DWORD WINAPI clientHandler(struct player* player) {
                 returnhea = strcmpi(message, "?health");
                 returnwal = strcmpi(message, "?wallet");
                 returnbnk = strcmpi(message, "?bank");
+                returnquit = strcmpi(message, "?quit");
                 returnid = strcmpi(message, "?me");
-                see(returnhelp, returninv, returnhea, returnwal, returnbnk, returnid, recvbuf, &recvbuflen,
+                see(returnhelp, returninv, returnhea, returnwal, returnbnk, returnquit, returnid, recvbuf, &recvbuflen,
                     player->inventory[id], player->health[id], player->wallet[id], player->bank[id], player->playerid[id]);
                 break;
             case '$':
